@@ -1,5 +1,7 @@
 {
     "servers" : [
+        "server123",
+        "server1234"
      ]
 
 }

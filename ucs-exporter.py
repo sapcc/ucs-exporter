@@ -8,14 +8,10 @@
 """
 
 import time
-import json
-
 import optparse
-from prometheus_client import CollectorRegistry
 from prometheus_client import start_http_server
 from prometheus_client.core import REGISTRY
-
-from modules.main_collector import MainCollector
+from collectors.UcsmCollector import UcsmCollector
 
 
 def get_params():
@@ -24,49 +20,39 @@ def get_params():
     :return: dict of arguments
     """
     parser = optparse.OptionParser()
+    required = ["user", "master_password", "inventory"]
 
-    parser.add_option("-c", "--config", help="", action="store", dest="conf")
+    parser.add_option("-c", "--config", help="", action="store", dest="config")
     parser.add_option("-p", "--master-password", help="master password to decrypt mpw", action="store",
                       dest="master_password")
     parser.add_option("-i", "--inventory", help="Server list", action="store", dest="inventory")
     parser.add_option("-u", "--user", help="user used with master password", action="store", dest="user")
 
     (options, args) = parser.parse_args()
+    options = vars(options)
+    for option in options:
+        if not options[option] and option in required:
+            parser.print_help()
+            parser.error("Argument {} can't be None ! \n".format(option))
     print(options)
-    print(args)
     return options
 
 
-def get_inventory(params):
-    inventory = params.inventory
-    with open(inventory) as json_file:
-        data = json.load(json_file)
-    return data["servers"]
-
-
 def start_collector(params):
-    registry = CollectorRegistry()
-    try:
-        server_list = get_inventory(params)
-        print(server_list, "List of servers")
-        creds = {"username": params.user, "password": params.master_password}
-
-        main_collector = MainCollector(servers=server_list, creds=creds)
-    except Exception as e:
-        print("Check for params, may be missing : {}".format(params))
-        print(e)
-        return
-    try:
-        REGISTRY.register(main_collector)
-    except Exception as e:
-        print("failed to register: {}".format(params))
-        print(e)
-        return
+    """
+    Start collector by registering
+    :param params: arguments
+    :return:
+    """
+    creds = {"username": params['user'], "master_password": params['master_password']}
+    inventory_file = params["inventory"]
+    ucsm_collector = UcsmCollector(creds=creds, inventory_file=inventory_file)
+    REGISTRY.register(ucsm_collector)
 
 
 if __name__ == '__main__':
     params = get_params()
-    srv = start_http_server(1234)
+    srv = start_http_server(9876)
     start_collector(params)
     while True:
-        time.sleep(3600)
+        time.sleep(10)
