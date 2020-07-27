@@ -33,7 +33,7 @@ class BaseCollector(ABC):
                     if self.handles.get(server_list[server]).login(timeout=5):
                         continue
                 except OSError as e:
-                    print("Problem logging in to", server_list[server], ":", e)
+                    print("Problem logging in to", server_list[server], ":", str(e))
                     self.handles.pop(server_list[server])
             else:
                 srv_obj = UcsmServer(server_list[server], self.creds['username'], self.creds['master_password'])

@@ -20,10 +20,10 @@ class UcsmServer(BaseClass):
         try:
             handle.login(timeout=5)
         except OSError as e:
-            print("Problem logging in to", self.ucs_server, ":", e)
+            print("Problem logging in to", self.ucs_server, ":", str(e))
             return
         except UcsException as e:
-            print("Problem logging in to", self.ucs_server, ":", e)
+            print("Problem logging in to", self.ucs_server, ":", str(e))
             return
 
         return handle
