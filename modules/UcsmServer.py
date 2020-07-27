@@ -19,7 +19,11 @@ class UcsmServer(BaseClass):
 
         try:
             handle.login(timeout=5)
+        except OSError as e:
+            print(e, "May be server not reachable !")
+            return
         except UcsException as e:
-            raise e
+            print(e, ", May be check for username and password !")
+            return
 
         return handle

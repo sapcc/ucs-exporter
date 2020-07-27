@@ -27,23 +27,19 @@ class BaseCollector(ABC):
         server_list = self.get_inventory()
         print("Create handles for Ucsm Servers.")
         for server in range(len(server_list)):
-            try:
-                print("Check if handle exists, else login ")
-                if self.handles.get(server_list[server]):
+            print("Check if handle exists, else login ")
+            if self.handles.get(server_list[server]):
+                try:
                     if self.handles.get(server_list[server]).login(timeout=5):
                         continue
-                    print("Server not reachable !")
-                    return
-                else:
-                    srv_obj = UcsmServer(server_list[server], self.creds['username'], self.creds['master_password'])
+                except OSError as e:
+                    print(e, "May be server not reachable !")
+                    self.handles.pop(server_list[server])
+            else:
+                srv_obj = UcsmServer(server_list[server], self.creds['username'], self.creds['master_password'])
+                if srv_obj.handle:
                     self.handles[server_list[server]] = srv_obj.handle
-                print(self.handles)
-            except OSError as e:
-                print(e, "May be server not reachable !")
-                return
-            except UcsException as e:
-                print(e, ", May be check for username and password !")
-                return
+            print(self.handles)
 
     def logout_handles(self):
         """
