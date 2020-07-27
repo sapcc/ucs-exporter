@@ -9,9 +9,15 @@
 
 import time
 import optparse
+
+from importlib import import_module
 from prometheus_client import start_http_server
 from prometheus_client.core import REGISTRY
-from collectors.UcsmCollector import UcsmCollector
+
+COLLECTORS = {
+    "UcsmCollector": "UcsmCollector",
+    "UcsServerLicenseCollector": "UcsServerLicenseCollector"
+}
 
 
 def get_params():
@@ -46,13 +52,16 @@ def start_collector(params):
     """
     creds = {"username": params['user'], "master_password": params['master_password']}
     inventory_file = params["inventory"]
-    ucsm_collector = UcsmCollector(creds=creds, inventory_file=inventory_file)
-    REGISTRY.register(ucsm_collector)
+
+    # Register collectors
+    for collector, class_name in COLLECTORS.items():
+        REGISTRY.register(getattr(import_module("collectors.{}".format(
+                                collector)), class_name)(creds, inventory_file))
 
 
 if __name__ == '__main__':
     params = get_params()
-    srv = start_http_server(9876)
     start_collector(params)
+    start_http_server(9876)
     while True:
         time.sleep(10)
