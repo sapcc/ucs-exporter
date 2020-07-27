@@ -14,10 +14,10 @@ from importlib import import_module
 from prometheus_client import start_http_server
 from prometheus_client.core import REGISTRY
 
-COLLECTORS = {
-    "UcsmCollector": "UcsmCollector",
-    "UcsServerLicenseCollector": "UcsServerLicenseCollector"
-}
+COLLECTORS = [
+    "UcsmCollector",
+    "UcsServerLicenseCollector"
+]
 
 
 def get_params():
@@ -44,7 +44,7 @@ def get_params():
     return options
 
 
-def start_collector(params):
+def register_collectors(params):
     """
     Start collector by registering
     :param params: arguments
@@ -54,14 +54,14 @@ def start_collector(params):
     inventory_file = params["inventory"]
 
     # Register collectors
-    for collector, class_name in COLLECTORS.items():
+    for collector in COLLECTORS:
         REGISTRY.register(getattr(import_module("collectors.{}".format(
-                                collector)), class_name)(creds, inventory_file))
+                                collector)), collector)(creds, inventory_file))
 
 
 if __name__ == '__main__':
     params = get_params()
-    start_collector(params)
+    register_collectors(params)
     start_http_server(9876)
     while True:
         time.sleep(10)
