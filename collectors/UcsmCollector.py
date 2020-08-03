@@ -12,7 +12,8 @@ class UcsmCollector(BaseCollector):
     def collect(self):
         print("UcsmCollector: Get updated handles !")
         self.get_handles()
-        g = GaugeMetricFamily('ucsm_info', 'UCSM server information')
+        g = GaugeMetricFamily('ucsm_info', 'UCSM server information',
+                              labels=['server', 'firmware_version'])
         for server, handle in self.handles.items():
             sys = handle.query_dn("sys")
             firmware_status = handle.query_children(sys, class_id="FirmwareStatus")
