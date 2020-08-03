@@ -18,7 +18,8 @@ class UcsServerLicenseCollector(BaseCollector):
         print("Getting updated handles for UcsServerLicenseCollector !")
         self.get_handles()
 
-        g = GaugeMetricFamily('ucs_port_license', 'Information about port license')
+        g = GaugeMetricFamily('ucs_port_license', 'Information about port license',
+                              labels=['server', 'port_name'])
         for server, handle in self.handles.items():
             for eth_p in handle.query_classid("EtherPIo"):
                 port_name = "{}-{}-{}".format(eth_p.switch_id,
