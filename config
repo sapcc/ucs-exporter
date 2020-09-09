@@ -1,0 +1,14 @@
+{
+    "netbox": {
+        "netbox_url": "",
+        "netbox_token": "",
+        "hostname": "",
+        "azone": "",
+        "domainname": "",
+        "regions": [],
+        "tenant": "",
+        "query": "",
+        "status": ""
+    }
+
+}

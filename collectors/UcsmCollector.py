@@ -3,8 +3,8 @@ from BaseCollector import BaseCollector
 
 
 class UcsmCollector(BaseCollector):
-    def __init__(self, creds, inventory_file):
-        super().__init__(creds, inventory_file)
+    def __init__(self, creds, config):
+        super().__init__(creds, config)
 
     def describe(self):
         yield GaugeMetricFamily("ucsm_metrics", "ucsm_collector_registered")

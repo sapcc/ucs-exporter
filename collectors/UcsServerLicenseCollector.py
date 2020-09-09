@@ -3,12 +3,13 @@ from BaseCollector import BaseCollector
 
 
 class UcsServerLicenseCollector(BaseCollector):
-    def __init__(self, creds, inventory_file):
-        super().__init__(creds, inventory_file)
+    def __init__(self, creds, config):
+        super().__init__(creds, config)
         self.license_state = {
             "license-expired": 0,
-            "not-applicable": 1,
-            "license-ok": 2
+            "license-graceperiod": 1,
+            "not-applicable": 2,
+            "license-ok": 3
         }
 
     def describe(self):
