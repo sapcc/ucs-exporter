@@ -2,9 +2,7 @@
     "netbox": {
         "netbox_url": "",
         "netbox_token": "",
-        "hostname": "",
-        "azone": "",
-        "domainname": "",
+        "ucs_hostname_format": "",
         "regions": [],
         "tenant": "",
         "query": "",

@@ -60,7 +60,5 @@ class Netbox:
         print(bbs)
         for region, bbs in bbs.items():
             for bb in bbs:
-                ucsm_servers.append("{}{}{}{}{}".format(self.nb_config["hostname"], bb,
-                                                        self.nb_config['azone'], region,
-                                                        self.nb_config['domainname']))
+                ucsm_servers.append(self.nb_config["ucs_hostname_format"].format(bb, region))
         return ucsm_servers
