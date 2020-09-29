@@ -4,8 +4,8 @@
 """
     ucs_exporter.py
     Exports prometheus consumable metrics for UCSM/UCSC.
-    usage: python3 path/to/ucs_exporter.py -u <user> -p <password> -c <config> -i <inventory>
-"""
+    usage: python3 path/to/ucs_exporter.py -u <user> -p <password> -c <config> -i <netbox_url> -t <netbox_token>
+ """
 
 import time
 import optparse
@@ -16,7 +16,8 @@ from prometheus_client.core import REGISTRY
 
 COLLECTORS = [
     "UcsmCollector",
-    "UcsServerLicenseCollector"
+    "UcsServerLicenseCollector",
+    "UcsmChassisFaultCollector"
 ]
 
 
@@ -26,12 +27,11 @@ def get_params():
     :return: dict of arguments
     """
     parser = optparse.OptionParser()
-    required = ["user", "master_password", "inventory"]
+    required = ["user", "master_password", "config"]
 
     parser.add_option("-c", "--config", help="", action="store", dest="config")
     parser.add_option("-p", "--master-password", help="master password to decrypt mpw", action="store",
                       dest="master_password")
-    parser.add_option("-i", "--inventory", help="Server list", action="store", dest="inventory")
     parser.add_option("-u", "--user", help="user used with master password", action="store", dest="user")
 
     (options, args) = parser.parse_args()
@@ -51,12 +51,11 @@ def register_collectors(params):
     :return:
     """
     creds = {"username": params['user'], "master_password": params['master_password']}
-    inventory_file = params["inventory"]
 
     # Register collectors
     for collector in COLLECTORS:
         REGISTRY.register(getattr(import_module("collectors.{}".format(
-                                collector)), collector)(creds, inventory_file))
+                                collector)), collector)(creds, params['config']))
 
 
 if __name__ == '__main__':

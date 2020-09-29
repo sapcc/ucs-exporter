@@ -2,13 +2,14 @@ import json
 from abc import ABC, abstractmethod
 from ucsmsdk.ucsexception import UcsException
 from modules.UcsmServer import UcsmServer
+from modules.Netbox import Netbox
 
 
 class BaseCollector(ABC):
-    def __init__(self, creds, inventory_file):
+    def __init__(self, creds, config):
         self.creds = creds
-        self.inventory_file = inventory_file
         self.handles = {}
+        self.config = config
 
     @abstractmethod
     def describe(self):
@@ -25,7 +26,7 @@ class BaseCollector(ABC):
                 e.g. self.handles = {"server_name": "<server_handle>", ...}
         """
         server_list = self.get_inventory()
-        print("Create handles for Ucsm Servers.")
+        print("Create handles for Ucsm Servers.", server_list)
         for server in range(len(server_list)):
             print("Check if handle exists, else login ")
             if self.handles.get(server_list[server]):
@@ -50,11 +51,24 @@ class BaseCollector(ABC):
             print("Logging out from server {}".format(server))
             handle.logout()
 
+    def get_config_data(self, key=None):
+        """
+
+        :return:
+        """
+        with open(self.config) as conf:
+            content = json.load(conf)
+        if key:
+            return content[key]
+        else:
+            return content
+
     def get_inventory(self):
         """
         Get updated inventory
-        :return:
+        :return: list of servers
         """
-        with open(self.inventory_file) as json_file:
-            data = json.load(json_file)
-        return data["servers"]
+        netbox_data = self.get_config_data(key="netbox")
+        netbox_obj = Netbox(nb_config=netbox_data)
+        server_list = netbox_obj.get_ucsm_servers_from_regions(netbox_data["regions"])
+        return server_list
