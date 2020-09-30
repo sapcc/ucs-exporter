@@ -9,6 +9,7 @@
 
 import time
 import optparse
+import logging
 
 from importlib import import_module
 from prometheus_client import start_http_server
@@ -20,6 +21,7 @@ COLLECTORS = [
     "UcsmChassisFaultCollector"
 ]
 
+logger = logging.getLogger("ucs-exporter")
 
 def get_params():
     """
@@ -33,6 +35,7 @@ def get_params():
     parser.add_option("-p", "--master-password", help="master password to decrypt mpw", action="store",
                       dest="master_password")
     parser.add_option("-u", "--user", help="user used with master password", action="store", dest="user")
+    parser.add_option("-v", "--verbose", help="increase verbosity", dest="verbose", action='count', default=0)
 
     (options, args) = parser.parse_args()
     options = vars(options)
@@ -41,6 +44,13 @@ def get_params():
             parser.print_help()
             parser.error("Argument {} can't be None ! \n".format(option))
     print(options)
+
+    loglevel = logging.INFO
+    if options['verbose'] > 0:
+        loglevel = logging.DEBUG
+    logging.basicConfig(level=loglevel)
+
+
     return options
 
 
@@ -61,6 +71,8 @@ def register_collectors(params):
 if __name__ == '__main__':
     params = get_params()
     register_collectors(params)
-    start_http_server(9876)
+    port = 9876
+    logger.info("Listening to port: %s" %port)
+    start_http_server(port)
     while True:
         time.sleep(10)
