@@ -19,7 +19,8 @@ COLLECTORS = [
     "UcsmCollector",
     "UcsServerLicenseCollector",
     "UcsmChassisFaultCollector",
-    "UcsPortCollector"
+    "UcsPortCollector",
+    "UcsPortErrStatsCollector"
 ]
 
 logger = logging.getLogger("ucs-exporter")
