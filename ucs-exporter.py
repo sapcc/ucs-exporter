@@ -18,7 +18,8 @@ from prometheus_client.core import REGISTRY
 COLLECTORS = [
     "UcsmCollector",
     "UcsServerLicenseCollector",
-    "UcsmChassisFaultCollector"
+    "UcsmChassisFaultCollector",
+    "UcsPortCollector"
 ]
 
 logger = logging.getLogger("ucs-exporter")
