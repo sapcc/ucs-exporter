@@ -1,7 +1,7 @@
-import json
+import yaml
 from abc import ABC, abstractmethod
-from ucsmsdk.ucsexception import UcsException
 from modules.UcsmServer import UcsmServer
+from ucsmsdk.ucsexception import UcsException
 from modules.Netbox import Netbox
 
 
@@ -49,17 +49,27 @@ class BaseCollector(ABC):
         """
         for server, handle in self.handles.items():
             print("Logging out from server {}".format(server))
-            handle.logout()
+            try:
+                handle.logout()
+            except OSError as e:
+                print("Problem logging out ", server, ":", str(e))
+                return
+            except UcsException as e:
+                print("Problem logging out ", server, ":", str(e))
+                return
 
-    def get_config_data(self, key=None):
+    def get_config_data(self, keys=None):
         """
 
         :return:
         """
+        content_dict = {}
         with open(self.config) as conf:
-            content = json.load(conf)
-        if key:
-            return content[key]
+            content = yaml.safe_load(conf)
+        if keys:
+            for key in keys:
+                content_dict.update(content[key])
+            return content_dict
         else:
             return content
 
@@ -68,7 +78,7 @@ class BaseCollector(ABC):
         Get updated inventory
         :return: list of servers
         """
-        netbox_data = self.get_config_data(key="netbox")
+        netbox_data = self.get_config_data(keys=["netbox"])
         netbox_obj = Netbox(nb_config=netbox_data)
         server_list = netbox_obj.get_ucsm_servers_from_regions(netbox_data["regions"])
         return server_list

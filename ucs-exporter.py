@@ -4,7 +4,7 @@
 """
     ucs_exporter.py
     Exports prometheus consumable metrics for UCSM/UCSC.
-    usage: python3 path/to/ucs_exporter.py -u <user> -p <password> -c <config> -i <netbox_url> -t <netbox_token>
+    usage: python3 path/to/ucs_exporter.py -u <user> -p <password> -c <config.yaml>
  """
 
 import time
@@ -17,7 +17,8 @@ from prometheus_client.core import REGISTRY
 COLLECTORS = [
     "UcsmCollector",
     "UcsServerLicenseCollector",
-    "UcsmChassisFaultCollector"
+    "UcsmChassisFaultCollector",
+    "UcsmCRCFaultCollector"
 ]
 
 
