@@ -6,7 +6,7 @@ logger = logging.getLogger("UcsPortErrStatsCollector")
 
 
 class UcsPortErrStatsCollector(BaseCollector):
-    KEYS = ['align', 'deferred_tx', 'fcs', 'int_mac_rx', 'int_mac_tx', 'out_discard', 'rcv', 'under_size', 'xmit']
+    KEYS = ['align', 'deferred_tx', 'fcs', 'int_mac_rx', 'int_mac_tx', 'out_discard', 'rcv', 'under_size', 'xmit', 'bad_crc_packets']
 
     def get_metrics(self):
         rv = {}
@@ -29,8 +29,9 @@ class UcsPortErrStatsCollector(BaseCollector):
             for port in handle.query_classid(NamingId.ETHER_ERR_STATS):
                 port_name = port.dn
                 for key in self.KEYS:
-                    labels = [server, port_name]
-                    mtr[key].add_metric(labels=labels, value=getattr(port, key, 0))
+                    if hasattr(port, key):
+                        labels = [server, port_name]
+                        mtr[key].add_metric(labels=labels, value=getattr(port, key))
 
         for m in mtr.values():
             yield m
