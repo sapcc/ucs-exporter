@@ -1,7 +1,7 @@
 import master_password as master_pass
 
 
-class BaseClass:
+class BaseClass(object):
     def __init__(self, server, user, master_pasword):
         self.ucs_server = server
         self.user = user

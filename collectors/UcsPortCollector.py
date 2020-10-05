@@ -24,9 +24,6 @@ ADMIN_STATE = {
 }
 
 class UcsPortCollector(BaseCollector):
-    def __init__(self, creds, config):
-        super().__init__(creds, config)
-
     def get_metrics(self):
         oper_state = GaugeMetricFamily('ucs_port_op_state', 'State if port is up/down',
                               labels=['server', 'port_name'])

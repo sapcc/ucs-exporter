@@ -8,9 +8,6 @@ logger = logging.getLogger("UcsPortErrStatsCollector")
 class UcsPortErrStatsCollector(BaseCollector):
     KEYS = ['align', 'deferred_tx', 'fcs', 'int_mac_rx', 'int_mac_tx', 'out_discard', 'rcv', 'under_size', 'xmit']
 
-    def __init__(self, creds, config):
-        super().__init__(creds, config)
-
     def get_metrics(self):
         rv = {}
         for key in self.KEYS:

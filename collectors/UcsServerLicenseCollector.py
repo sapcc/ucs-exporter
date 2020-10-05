@@ -3,8 +3,8 @@ from BaseCollector import BaseCollector
 
 
 class UcsServerLicenseCollector(BaseCollector):
-    def __init__(self, creds, config):
-        super().__init__(creds, config)
+    def __init__(self, manager):
+        super().__init__(manager)
         self.license_state = {
             "license-expired": 0,
             "license-graceperiod": 1,
@@ -30,5 +30,3 @@ class UcsServerLicenseCollector(BaseCollector):
                 labels = [server, port_name]
                 g.add_metric(labels=labels, value=self.license_state[license_state])
         yield g
-
-        self.logout_handles()

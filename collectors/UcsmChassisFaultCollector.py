@@ -3,9 +3,6 @@ from BaseCollector import BaseCollector
 
 
 class UcsmChassisFaultCollector(BaseCollector):
-    def __init__(self, creds, config):
-        super().__init__(creds, config)
-
     def describe(self):
         yield GaugeMetricFamily("ucsm_chassis_metrics", "ucsm_chassis_fault_collector")
 
@@ -25,6 +22,3 @@ class UcsmChassisFaultCollector(BaseCollector):
                         g.add_metric(labels=[server, fault.cause, fault.severity, fault.descr],
                                      value=0)
         yield g
-
-        self.logout_handles()
-

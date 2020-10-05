@@ -14,6 +14,7 @@ import logging
 from importlib import import_module
 from prometheus_client import start_http_server
 from prometheus_client.core import REGISTRY
+from modules.connection_manager import ConnectionManager
 
 COLLECTORS = [
     "UcsmCollector",
@@ -64,10 +65,11 @@ def register_collectors(params):
     """
     creds = {"username": params['user'], "master_password": params['master_password']}
 
+    manager = ConnectionManager(creds, params['config'])
     # Register collectors
     for collector in COLLECTORS:
         REGISTRY.register(getattr(import_module("collectors.{}".format(
-                                collector)), collector)(creds, params['config']))
+                                collector)), collector)(manager))
 
 
 if __name__ == '__main__':
