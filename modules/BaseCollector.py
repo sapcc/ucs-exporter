@@ -2,7 +2,7 @@ import json
 import logging
 from abc import ABC, abstractmethod
 from ucsmsdk.ucsexception import UcsException
-from modules.UcsmServer import UcsmServer
+from .UcsmServer import UcsmServer
 
 logger = logging.getLogger("BaseCollector")
 

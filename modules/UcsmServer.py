@@ -1,6 +1,6 @@
 from ucsmsdk.ucshandle import UcsHandle
 from ucsmsdk.ucsexception import UcsException
-from BaseModule import BaseClass
+from .BaseModule import BaseClass
 
 
 class UcsmServer(BaseClass):

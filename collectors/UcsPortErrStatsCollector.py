@@ -1,6 +1,6 @@
 from prometheus_client.core import CounterMetricFamily
 from ucsmsdk.ucsconstants import NamingId
-from BaseCollector import BaseCollector
+from modules.BaseCollector import BaseCollector
 import logging
 logger = logging.getLogger("UcsPortErrStatsCollector")
 

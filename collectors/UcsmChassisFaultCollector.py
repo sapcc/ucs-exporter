@@ -1,5 +1,5 @@
 from prometheus_client.core import GaugeMetricFamily
-from BaseCollector import BaseCollector
+from modules.BaseCollector import BaseCollector
 
 
 class UcsmChassisFaultCollector(BaseCollector):

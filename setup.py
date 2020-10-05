@@ -26,4 +26,5 @@ setuptools.setup(
         'scrypt'
     ],
     python_requires='>=3.6',
+    scripts=['ucs-exporter.py']
 )
