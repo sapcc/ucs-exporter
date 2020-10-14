@@ -4,9 +4,9 @@ import pynetbox
 class Netbox:
     def __init__(self, nb_config):
         self.nb_config = nb_config
-        self.nb = self._login()
+        self.nb = self._create_handle()
 
-    def _login(self):
+    def _create_handle(self):
         """
         Login to netbox
         :return:

@@ -1,8 +1,11 @@
-netbox:
-    netbox_url: "https://netbox.global.cloud.sap"
-    netbox_token: "97bc508ab27df514c963435ae7097672efdaab2a"
-    ucs_hostname_format: "ucscluster-{}.cc.{}.cloud.sap"
-    regions: ["qa-de-1"]
-    tenant: "converged-cloud"
-    query: "ucsa"
-    status: "active"
+{
+    "netbox": {
+        "netbox_url": "",
+        "netbox_token": "",
+        "ucs_hostname_format": "",
+        "regions": "",
+        "tenant": "",
+        "query": "",
+        "status": ""
+    }
+}
