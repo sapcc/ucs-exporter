@@ -22,7 +22,7 @@ class UcsServerLicenseCollector(BaseCollector):
         g = GaugeMetricFamily('ucs_port_license', 'Information about port license',
                               labels=['server', 'port_name'])
         for server, handle in self.handles.items():
-            for eth_p in handle.query_classid("EtherPIo"):
+            for eth_p in self.query(handle.query_classid, "EtherPIo"):
                 port_name = "{}-{}-{}".format(eth_p.switch_id,
                                               eth_p.aggr_port_id,
                                               eth_p.rn)

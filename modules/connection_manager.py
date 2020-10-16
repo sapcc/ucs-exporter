@@ -43,6 +43,19 @@ class ConnectionManager(object):
         rm_connections = set(self.handles.keys())
         for sid in range(len(server_list)):
             server = server_list[sid]
+            if server in self.handles:
+                try:
+                    self.handles[server].query_dn("sys")
+                    logger.debug("test query to %s successful" % server)
+                    if server in rm_connections:
+                        rm_connections.remove(server)
+                except UcsException as e:
+                    if e.error_code == 552:
+                        logger.debug("Refresh login to %s" % server)
+                    else:
+                        logger.error("Problem refreshing %s:%s", server, str(e), extra={'server': server, 'error': e})
+                    del self.handles[server]
+
             if server not in self.handles:
                 logger.debug("Login into %s" % server)
                 srv_obj = UcsmServer(server, self.creds['username'], self.creds['master_password'])
@@ -54,10 +67,15 @@ class ConnectionManager(object):
                 try:
                     if handle.login(timeout=5, auto_refresh=True):
                         self.handles[server] = handle
+                        if server in rm_connections:
+                            rm_connections.remove(server)
+                        continue
                 except Exception as e:
                     logger.error("Problem logging in to %s:%s", server, str(e), extra={'server': server, 'error': e})
-            else:
-                rm_connections.remove(server)
+            # refresh otherwise the handle gets stale
+
+            #else:
+            #    rm_connections.remove(server)
         # remove old connections no longer in server list
         for s in rm_connections:
             logger.info("remove old server connection: %s", s)

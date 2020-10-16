@@ -13,9 +13,9 @@ class UcsmChassisFaultCollector(BaseCollector):
                               labels=['server', 'fault', 'severity', 'description'])
         for server, handle in self.handles.items():
             sys = handle.query_dn("sys")
-            chassis = handle.query_children(sys, class_id="EquipmentChassis")
+            chassis = self.query(handle.query_children, sys, class_id="EquipmentChassis")
             for chassi in chassis:
-                faults = handle.query_children(chassi, class_id="FaultInst")
+                faults = self.query(handle.query_children, chassi, class_id="FaultInst")
                 print("Faults ..... ", faults, server)
                 if faults:
                     for fault in faults:

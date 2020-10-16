@@ -21,7 +21,9 @@ COLLECTORS = [
     "UcsServerLicenseCollector",
     "UcsmChassisFaultCollector",
     "UcsPortCollector",
-    "UcsPortErrStatsCollector"
+    "UcsPortStatsCollector.UcsPortErrStatsCollector",
+    "UcsPortStatsCollector.UcsPortRXStatsCollector",
+    "UcsPortStatsCollector.UcsPortTXStatsCollector"
 ]
 
 logger = logging.getLogger("ucs-exporter")
@@ -39,6 +41,7 @@ def get_params():
                       dest="master_password")
     parser.add_option("-u", "--user", help="user used with master password", action="store", dest="user")
     parser.add_option("-v", "--verbose", help="increase verbosity", dest="verbose", action='count', default=0)
+    parser.add_option("--port", help="Port to listen on", dest="port", type=int, default=9876)
 
     (options, args) = parser.parse_args()
     options = vars(options)
@@ -52,7 +55,6 @@ def get_params():
     if options['verbose'] > 0:
         loglevel = logging.DEBUG
     logging.basicConfig(level=loglevel)
-
 
     return options
 
@@ -68,15 +70,21 @@ def register_collectors(params):
     manager = ConnectionManager(creds, params['config'])
     # Register collectors
     for collector in COLLECTORS:
-        REGISTRY.register(getattr(import_module("collectors.{}".format(
-                                collector)), collector)(manager))
+        if "." in collector:
+            mod, name = collector.split(".", 1)
+            instance = getattr(import_module("collectors.{}".format(mod)), name)(manager)
 
+        else:
+            instance = getattr(import_module("collectors.{}".format(collector)), collector)(manager)
+
+        logger.debug("Register collector: %s", instance)
+        REGISTRY.register(instance)
 
 if __name__ == '__main__':
     params = get_params()
+    print(params)
     register_collectors(params)
-    port = 9876
-    logger.info("Listening to port: %s" %port)
-    start_http_server(port)
+    logger.info("Listening to port: %s" %params['port'])
+    start_http_server(params['port'])
     while True:
         time.sleep(10)
