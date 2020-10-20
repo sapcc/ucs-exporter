@@ -3,4 +3,4 @@ ucsmsdk
 ucscsdk
 prometheus_client
 pynetbox
-yaml
+pyyaml
