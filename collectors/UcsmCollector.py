@@ -22,9 +22,9 @@ class UcsmCollector(BaseCollector):
                 i.add_metric(labels=["server", "firmware_version"], value={"server":server,
                                                                            "firmware_version":firmware_version})
             except urllib.error.URLError as e:
-                print("URLError: ", e.reason)
+                print("URLError: ", server, e.reason)
             except UcsException as e:
-                print("UcsException : ", str(e))
+                print("UcsException : ", server, str(e))
         yield i
 
         self.logout_handles()
