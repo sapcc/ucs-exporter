@@ -13,7 +13,6 @@ class UcsmCRCFaultCollector(BaseCollector):
         yield GaugeMetricFamily("ucsm_crc_error", "ucsm_crc_collector")
 
     def collect(self):
-        print("UcsmCRCFaultCollector: Get updated handles !")
         self.get_handles()
         g = GaugeMetricFamily('ucsm_crc_error', 'UCSM server CRC errors',
                               labels=['server', 'port'])
@@ -32,9 +31,9 @@ class UcsmCRCFaultCollector(BaseCollector):
                     g.add_metric(labels=[server, err.dn],
                                  value=err.bad_crc_packets)
             except urllib.error.URLError as e:
-                print("URLError", e.reason)
+                print("URLError", server, e.reason)
             except UcsException as e:
-                print("UcsException : ", str(e))
+                print("UcsException : ", server, str(e))
         yield g
 
         self.logout_handles()

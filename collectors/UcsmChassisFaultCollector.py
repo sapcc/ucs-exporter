@@ -12,7 +12,6 @@ class UcsmChassisFaultCollector(BaseCollector):
         yield GaugeMetricFamily("ucsm_chassis_faults", "ucsm_chassis_fault_collector")
 
     def collect(self):
-        print("UcsmChassisFaultCollector: Get updated handles !")
         self.get_handles()
         g = GaugeMetricFamily('ucsm_chassis_faults', 'UCSM server chassis faults',
                               labels=['server', 'fault', 'severity', 'description'])
@@ -28,9 +27,9 @@ class UcsmChassisFaultCollector(BaseCollector):
                             g.add_metric(labels=[server, fault.cause, fault.severity, fault.descr],
                                          value=0)
             except urllib.error.URLError as e:
-                print("URLError: ", e.reason)
+                print("URLError: ", server, e.reason)
             except UcsException as e:
-                print("UcsException : ", str(e))
+                print("UcsException : ", server, str(e))
         yield g
 
         self.logout_handles()

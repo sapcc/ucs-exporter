@@ -32,9 +32,9 @@ class UcsServerLicenseCollector(BaseCollector):
                     labels = [server, port_name]
                     g.add_metric(labels=labels, value=self.license_state[license_state])
             except urllib.error.URLError as e:
-                print("URLError: ", e.reason)
+                print("URLError: ", server, e.reason)
             except UcsException as e:
-                print("UcsException : ", str(e))
+                print("UcsException : ", server, str(e))
         yield g
 
         self.logout_handles()
