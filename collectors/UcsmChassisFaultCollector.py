@@ -1,13 +1,13 @@
+import urllib
 from prometheus_client.core import GaugeMetricFamily
 from modules.BaseCollector import BaseCollector
 
 
 class UcsmChassisFaultCollector(BaseCollector):
     def describe(self):
-        yield GaugeMetricFamily("ucsm_chassis_metrics", "ucsm_chassis_fault_collector")
+        yield GaugeMetricFamily("ucsm_chassis_faults", "ucsm_chassis_fault_collector")
 
     def collect(self):
-        print("UcsmChassisFaultCollector: Get updated handles !")
         self.get_handles()
         g = GaugeMetricFamily('ucsm_chassis_faults', 'UCSM server chassis faults',
                               labels=['server', 'fault', 'severity', 'description'])

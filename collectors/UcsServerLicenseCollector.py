@@ -1,3 +1,4 @@
+import urllib
 from prometheus_client.core import GaugeMetricFamily
 from modules.BaseCollector import BaseCollector
 
@@ -16,10 +17,10 @@ class UcsServerLicenseCollector(BaseCollector):
         yield GaugeMetricFamily("ucs_server_license", "licenses")
 
     def collect(self):
-        print("Getting updated handles for UcsServerLicenseCollector !")
+        print("UcsServerLicenseCollector: Get Updated handles !")
         self.get_handles()
 
-        g = GaugeMetricFamily('ucs_port_license', 'Information about port license',
+        g = GaugeMetricFamily('ucs_server_license', 'Information about port license',
                               labels=['server', 'port_name'])
         for server, handle in self.handles.items():
             for eth_p in self.query(handle.query_classid, "EtherPIo"):

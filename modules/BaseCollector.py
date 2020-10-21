@@ -20,6 +20,8 @@ class BaseCollector(ABC):
         for retry in range(2):
             try:
                 return fnc(*args, **kwargs)
+            except urllib.error.URLError as e:
+                logger.error("URLError: ", server, e.reason)
             except UcsException as e:
                 if e.error_code == 552:
                     # we need to login again

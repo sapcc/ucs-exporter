@@ -4,9 +4,9 @@ import pynetbox
 class Netbox:
     def __init__(self, nb_config):
         self.nb_config = nb_config
-        self.nb = self._login()
+        self.nb = self._create_handle()
 
-    def _login(self):
+    def _create_handle(self):
         """
         Login to netbox
         :return:
@@ -20,7 +20,11 @@ class Netbox:
         :param region: region name
         :return: List of availability zones
         """
-        av_zones = self.nb.dcim.sites.filter(region=region)
+        av_zones = []
+        try:
+            av_zones = self.nb.dcim.sites.filter(region=region)
+        except pynetbox.RequestError as e:
+            print("Netbox exception : ", e.error)
         return av_zones
 
     def get_all_bb_from_av_zones(self, av_zones):
@@ -31,9 +35,12 @@ class Netbox:
         """
         bbs = {}
         for av_zone in av_zones:
-            ucs_servers = self.nb.dcim.devices.filter(q=self.nb_config["query"], tenant=self.nb_config["tenant"],
-                                                      status=self.nb_config["status"], site=av_zone)
-            bbs.setdefault(av_zone, []).extend([ucs.name.split("-")[1].lower() for ucs in ucs_servers])
+            try:
+                ucs_servers = self.nb.dcim.devices.filter(q=self.nb_config["query"], tenant=self.nb_config["tenant"],
+                                                          status=self.nb_config["status"], site=av_zone)
+                bbs.setdefault(av_zone, []).extend([ucs.name.split("-")[1].lower() for ucs in ucs_servers])
+            except pynetbox.RequestError as e:
+                print("Netbox exception : ", e.error)
         return bbs
 
     def get_all_bb_from_regions(self, regions):
@@ -44,9 +51,12 @@ class Netbox:
         """
         bbs = {}
         for region in regions:
-            ucs_servers = self.nb.dcim.devices.filter(q=self.nb_config["query"], tenant=self.nb_config["tenant"],
-                                                      status=self.nb_config["status"], region=region)
-            bbs.setdefault(region, []).extend([ucs.name.split("-")[1].lower() for ucs in ucs_servers])
+            try:
+                ucs_servers = self.nb.dcim.devices.filter(q=self.nb_config["query"], tenant=self.nb_config["tenant"],
+                                                          status=self.nb_config["status"], region=region)
+                bbs.setdefault(region, []).extend([ucs.name.split("-")[1].lower() for ucs in ucs_servers])
+            except pynetbox.RequestError as e:
+                print("Netbox exception : ", e.error)
         return bbs
 
     def get_ucsm_servers_from_regions(self, regions):
@@ -57,7 +67,6 @@ class Netbox:
         """
         ucsm_servers = []
         bbs = self.get_all_bb_from_regions(regions)
-        print(bbs)
         for region, bbs in bbs.items():
             for bb in bbs:
                 ucsm_servers.append(self.nb_config["ucs_hostname_format"].format(bb, region))

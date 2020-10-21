@@ -1,3 +1,4 @@
+import urllib
 from prometheus_client.core import InfoMetricFamily
 from modules.BaseCollector import BaseCollector
 from ucsmsdk.ucsexception import UcsException
@@ -7,7 +8,7 @@ logger = logging.getLogger("UcsmCollector")
 
 class UcsmCollector(BaseCollector):
     def describe(self):
-        yield InfoMetricFamily("ucsm_metrics", "ucsm_collector_registered")
+        yield InfoMetricFamily("ucsm_firmware", "ucsm_collector_registered")
 
     def collect(self):
         print("UcsmCollector: Get updated handles !")

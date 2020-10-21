@@ -3,4 +3,4 @@ scrape_configs:
   scrape_interval: 20m
   scrape_timeout: 20m
   static_configs:
-  - targets: ["localhost:9876"]
+  - targets: [""]
