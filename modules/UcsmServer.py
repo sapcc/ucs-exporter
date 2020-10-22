@@ -1,3 +1,4 @@
+import re
 from ucsmsdk.ucshandle import UcsHandle
 from ucsmsdk.ucsexception import UcsException
 from BaseModule import BaseClass
@@ -15,7 +16,7 @@ class UcsmServer(BaseClass):
         :return:
         """
         print("Logging in first time !")
-        handle = UcsHandle(self.ucs_server, self.user, self.password)
+        handle = UcsHandle(self.ucs_server, self.user, re.sub('[$?=]', '', self.password))
 
         try:
             handle.login(timeout=5)
