@@ -23,7 +23,7 @@ COLLECTORS = [
     "UcsPortCollector",
     "UcsPortStatsCollector.UcsPortErrStatsCollector",
     "UcsPortStatsCollector.UcsPortRXStatsCollector",
-    "UcsPortStatsCollector.UcsPortTXStatsCollector"
+    "UcsPortStatsCollector.UcsPortTXStatsCollector",
     "UcsmCRCFaultCollector"
 ]
 
@@ -42,6 +42,7 @@ def get_params():
                       dest="master_password")
     parser.add_option("-u", "--user", help="user used with master password", action="store", dest="user")
     parser.add_option("-v", "--verbose", help="increase verbosity", dest="verbose", action='count', default=0)
+    parser.add_option("-i", "--interval", dest="interval", help="poll data in seconds", default=30)
     parser.add_option("--port", help="Port to listen on", dest="port", type=int, default=9876)
 
     (options, args) = parser.parse_args()
@@ -80,6 +81,9 @@ def register_collectors(params):
 
         logger.debug("Register collector: %s", instance)
         REGISTRY.register(instance)
+        manager.register_collector(instance)
+
+    manager.start_poll_thread()
 
 if __name__ == '__main__':
     params = get_params()

@@ -35,13 +35,7 @@ class UcsPortCollector(BaseCollector):
                 "oper_speed": oper_speed,
                 "admin_state": admin_state}
 
-    def describe(self):
-        metrics = self.get_metrics()
-        for m in metrics.values():
-            yield m
-
-
-    def collect(self):
+    def collect_metrics(self):
         logger.debug("UcsPortCollector.collect()")
         self.get_handles()
         globals().update(self.get_metrics())

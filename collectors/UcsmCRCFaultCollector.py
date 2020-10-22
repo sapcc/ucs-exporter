@@ -1,18 +1,15 @@
 import urllib
 from prometheus_client.core import GaugeMetricFamily
-from BaseCollector import BaseCollector
+from modules.BaseCollector import BaseCollector
 from ucsmsdk.ucsconstants import NamingId
 from ucsmsdk.ucsexception import UcsException
 
 
 class UcsmCRCFaultCollector(BaseCollector):
-    def __init__(self, creds, config):
-        super().__init__(creds, config)
+    def get_metrics(self):
+        return {"crc": GaugeMetricFamily("ucsm_crc_error", "ucsm_crc_collector")}
 
-    def describe(self):
-        yield GaugeMetricFamily("ucsm_crc_error", "ucsm_crc_collector")
-
-    def collect(self):
+    def collect_metrics(self):
         self.get_handles()
         g = GaugeMetricFamily('ucsm_crc_error', 'UCSM server CRC errors',
                               labels=['server', 'port'])

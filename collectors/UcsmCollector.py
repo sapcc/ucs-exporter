@@ -7,10 +7,10 @@ import logging
 logger = logging.getLogger("UcsmCollector")
 
 class UcsmCollector(BaseCollector):
-    def describe(self):
-        yield InfoMetricFamily("ucsm_firmware", "ucsm_collector_registered")
+    def get_metrics(self):
+        return {"info": InfoMetricFamily("ucsm_firmware", "ucsm_collector_registered")}
 
-    def collect(self):
+    def collect_metrics(self):
         print("UcsmCollector: Get updated handles !")
         self.get_handles()
         g = InfoMetricFamily('ucsm_info', 'UCSM server information', labels=["server", "firmware_version"])

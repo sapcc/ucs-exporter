@@ -1,15 +1,49 @@
 import json
 import logging
+import threading
+import traceback
+import time
+import math
 from ucsmsdk.ucsexception import UcsException
 from modules.UcsmServer import UcsmServer
 
+
 logger = logging.getLogger("BaseCollector")
+
+class DataPoller(threading.Thread):
+    def __init__(self, manager, config):
+        threading.Thread.__init__(self)
+        self.manager = manager
+        self.setDaemon(True)
+        self.config = config
+
+    def run(self):
+        while True:
+            try:
+                start = time.time()
+                for collector in self.manager.get_collectors():
+                    try:
+                        logger.debug("Collect data from %s", collector)
+                        collector.update_cache()
+                    except Exception as e:
+                        logger.error("Exception in Collector: %s", e)
+                        traceback.print_exc(e)
+                wait = min(0,  self.config["interval"] - (start - time.time()))
+                if wait:
+                    time.sleep(wait)
+            except Exception as e:
+                logger.error("Exception in Poller Thread: %s", e)
+                traceback.print_exc(e)
+
+
 
 class ConnectionManager(object):
     def __init__(self, creds, config):
         self.creds = creds
         self.handles = {}
         self.config = config
+        self._collectors = []
+        self._poll_thread = DataPoller(self, config)
 
     def get_inventory(self):
         """
@@ -108,3 +142,15 @@ class ConnectionManager(object):
             return content[key]
         else:
             return content
+
+    def register_collector(self, collector):
+        if collector not in self._collectors:
+            self._collectors.append(collector)
+        else:
+            logger.error("Collector %s is already registered", collector)
+
+    def get_collectors(self):
+        return self._collectors
+
+    def start_poll_thread(self):
+        self._poll_thread.start()

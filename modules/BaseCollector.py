@@ -12,6 +12,8 @@ logger = logging.getLogger("BaseCollector")
 class BaseCollector(ABC):
     def __init__(self, manager):
         self.manager = manager
+        self.metrics = self.get_metrics()
+        self._last_results = []
 
     def get_handles(self):
         return self.manager.get_handles()
@@ -33,18 +35,35 @@ class BaseCollector(ABC):
                 logger.error("Exception while query UCS: %s. Retry: %s" % (e, retry))
                 traceback.print_exc()
         return ()
-
-    @property
-    def handles(self):
-        return self.manager.handles
-
-    @abstractmethod
-    def describe(self):
-        pass
-
-    @abstractmethod
+    
     def collect(self):
+        """Default implementation returns the last collected metrics"""
+        for m in self._last_results:
+            yield m
+
+    def update_cache(self):
+        """Updates internal cache with latest query from servers"""
+        new_data = []
+        for metric in self.collect_metrics():
+            new_data.append(metric)
+
+        self._last_results = new_data
+
+    @abstractmethod
+    def collect_metrics(self):
+        """Actual implementation that queries remote servers for metrics"""
         pass
+
+    @abstractmethod
+    def get_metrics(self):
+        """Returns a dict of metrics this collector returns"""
+        pass
+
+    def describe(self):
+        metrics = self.get_metrics()
+        for m in metrics.values():
+            yield m
+
 
 class GenericClassCollector(BaseCollector):
     """
@@ -57,12 +76,7 @@ class GenericClassCollector(BaseCollector):
                                           labels=self.LABELS)
         return rv
 
-    def describe(self):
-        metrics = self.get_metrics()
-        for m in metrics.values():
-            yield m
-
-    def collect(self):
+    def collect_metrics(self):
         logger.debug("%s.collect()" % self.__class__.__name__)
         self.get_handles()
         mtr = self.get_metrics()

@@ -4,10 +4,12 @@ from modules.BaseCollector import BaseCollector
 
 
 class UcsmChassisFaultCollector(BaseCollector):
-    def describe(self):
-        yield GaugeMetricFamily("ucsm_chassis_faults", "ucsm_chassis_fault_collector")
+    def get_metrics(self):
+        return {
+            "faults": GaugeMetricFamily("ucsm_chassis_faults", "ucsm_chassis_fault_collector")
+        }
 
-    def collect(self):
+    def collect_metrics(self):
         self.get_handles()
         g = GaugeMetricFamily('ucsm_chassis_faults', 'UCSM server chassis faults',
                               labels=['server', 'fault', 'severity', 'description'])
