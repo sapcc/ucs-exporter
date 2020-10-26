@@ -13,7 +13,7 @@ class UcsmChassisFaultCollector(BaseCollector):
         self.get_handles()
         g = GaugeMetricFamily('ucsm_chassis_faults', 'UCSM server chassis faults',
                               labels=['server', 'fault', 'severity', 'description'])
-        for server, handle in self.handles.items():
+        for server, handle in self.get_handles():
             sys = handle.query_dn("sys")
             chassis = self.query(handle.query_children, sys, class_id="EquipmentChassis")
             for chassi in chassis:

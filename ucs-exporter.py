@@ -42,7 +42,7 @@ def get_params():
                       dest="master_password")
     parser.add_option("-u", "--user", help="user used with master password", action="store", dest="user")
     parser.add_option("-v", "--verbose", help="increase verbosity", dest="verbose", action='count', default=0)
-    parser.add_option("-i", "--interval", dest="interval", help="poll data in seconds", default=30)
+    parser.add_option("-i", "--interval", dest="interval", type=int, help="poll data in seconds", default=30)
     parser.add_option("--port", help="Port to listen on", dest="port", type=int, default=9876)
 
     (options, args) = parser.parse_args()
@@ -69,7 +69,7 @@ def register_collectors(params):
     """
     creds = {"username": params['user'], "master_password": params['master_password']}
 
-    manager = ConnectionManager(creds, params['config'])
+    manager = ConnectionManager(creds, params)
     # Register collectors
     for collector in COLLECTORS:
         if "." in collector:
@@ -90,6 +90,7 @@ if __name__ == '__main__':
     print(params)
     register_collectors(params)
     logger.info("Listening to port: %s" %params['port'])
+    logger.info("Poll interval: %i" %params['interval'])
     start_http_server(params['port'])
     while True:
         time.sleep(10)

@@ -1,7 +1,6 @@
 import json
 import logging
 import threading
-import traceback
 import time
 import math
 from ucsmsdk.ucsexception import UcsException
@@ -13,6 +12,7 @@ logger = logging.getLogger("BaseCollector")
 class DataPoller(threading.Thread):
     def __init__(self, manager, config):
         threading.Thread.__init__(self)
+        self.setName("DataPoller")
         self.manager = manager
         self.setDaemon(True)
         self.config = config
@@ -26,14 +26,12 @@ class DataPoller(threading.Thread):
                         logger.debug("Collect data from %s", collector)
                         collector.update_cache()
                     except Exception as e:
-                        logger.error("Exception in Collector: %s", e)
-                        traceback.print_exc(e)
-                wait = min(0,  self.config["interval"] - (start - time.time()))
-                if wait:
+                        logger.exception("Exception in Collector: %s", e)
+                wait = max(0,  self.config["interval"] - (time.time() - start))
+                if wait > 0:
                     time.sleep(wait)
             except Exception as e:
-                logger.error("Exception in Poller Thread: %s", e)
-                traceback.print_exc(e)
+                logger.exception("Exception in Poller Thread: %s", e)
 
 
 
@@ -136,7 +134,7 @@ class ConnectionManager(object):
 
         :return:
         """
-        with open(self.config) as conf:
+        with open(self.config['config']) as conf:
             content = json.load(conf)
         if key:
             return content[key]

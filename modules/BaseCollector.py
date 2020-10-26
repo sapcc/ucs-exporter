@@ -16,7 +16,9 @@ class BaseCollector(ABC):
         self._last_results = []
 
     def get_handles(self):
-        return self.manager.get_handles()
+        """yields all available connections as (server, handle) tuples"""
+        for k, v in self.manager.get_handles():
+            yield (k,v)
 
     def query(self, fnc, *args, **kwargs):
         for retry in range(2):
@@ -32,8 +34,7 @@ class BaseCollector(ABC):
                 else:
                     logger.error("UCSException while query UCS: %s. Retry: %s" % (e, retry))
             except Exception as e:
-                logger.error("Exception while query UCS: %s. Retry: %s" % (e, retry))
-                traceback.print_exc()
+                logger.exception("Exception while query UCS: %s. Retry: %s" % (e, retry))
         return ()
     
     def collect(self):
@@ -81,7 +82,7 @@ class GenericClassCollector(BaseCollector):
         self.get_handles()
         mtr = self.get_metrics()
 
-        for server, handle in self.handles.items():
+        for server, handle in self.get_handles():
             for port in self.query(handle.query_classid, self.CLASS):
                 port_name = port.dn
                 for key in self.KEYS:

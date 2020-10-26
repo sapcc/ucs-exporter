@@ -13,7 +13,7 @@ class UcsmCRCFaultCollector(BaseCollector):
         self.get_handles()
         g = GaugeMetricFamily('ucsm_crc_error', 'UCSM server CRC errors',
                               labels=['server', 'port'])
-        for server, handle in self.handles.items():
+        for server, handle in self.get_handles():
             try:
                 errs = handle.query_classid(NamingId.ETHER_NI_ERR_STATS)
                 for err in errs:
@@ -32,6 +32,4 @@ class UcsmCRCFaultCollector(BaseCollector):
             except UcsException as e:
                 print("UcsException : ", server, str(e))
         yield g
-
-        self.logout_handles()
 

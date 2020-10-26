@@ -40,7 +40,7 @@ class UcsPortCollector(BaseCollector):
         self.get_handles()
         globals().update(self.get_metrics())
 
-        for server, handle in self.handles.items():
+        for server, handle in self.get_handles():
             for eth_p in self.query(handle.query_classid, "EtherPIo"):
                 port_name = "{}-{}-{}".format(eth_p.switch_id,
                                               eth_p.aggr_port_id,
