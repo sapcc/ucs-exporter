@@ -14,7 +14,7 @@ import logging
 from importlib import import_module
 from prometheus_client import start_http_server
 from prometheus_client.core import REGISTRY
-from modules.connection_manager import ConnectionManager
+from modules.ConnectionManager import ConnectionManager
 
 COLLECTORS = [
     "UcsmCollector",
