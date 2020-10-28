@@ -43,6 +43,7 @@ def get_params():
     parser.add_option("-u", "--user", help="user used with master password", action="store", dest="user")
     parser.add_option("-v", "--verbose", help="increase verbosity", dest="verbose", action='count', default=0)
     parser.add_option("-i", "--interval", dest="interval", type=int, help="poll data in seconds", default=30)
+    parser.add_option("-r", "--retry-timeout", dest="retry_timeout", type=int, help="Retry unreachable servers after N seconds", default=60)
     parser.add_option("--port", help="Port to listen on", dest="port", type=int, default=9876)
 
     (options, args) = parser.parse_args()

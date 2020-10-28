@@ -1,6 +1,7 @@
 import json
 import logging
 import traceback
+import urllib
 from abc import ABC, abstractmethod
 from prometheus_client.core import CounterMetricFamily
 from ucsmsdk.ucsexception import UcsException
@@ -17,13 +18,14 @@ class BaseCollector(ABC):
 
     def get_handles(self):
         """yields all available connections as (server, handle) tuples"""
-        for k, v in self.manager.get_handles():
+        for k, v in self.manager.get_handles().items():
             yield (k,v)
 
     def query(self, fnc, *args, **kwargs):
         for retry in range(2):
             try:
-                return fnc(*args, **kwargs)
+                return fnc(*tuple(args), **dict(kwargs))
+                # yield data
             except urllib.error.URLError as e:
                 logger.error("URLError: ", server, e.reason)
             except UcsException as e:
@@ -35,10 +37,14 @@ class BaseCollector(ABC):
                     logger.error("UCSException while query UCS: %s. Retry: %s" % (e, retry))
             except Exception as e:
                 logger.exception("Exception while query UCS: %s. Retry: %s" % (e, retry))
-        return ()
+            else:
+                # data handler yielded without problems
+                return
+        return
     
     def collect(self):
         """Default implementation returns the last collected metrics"""
+        #print("return cache: %s", self._last_results)
         for m in self._last_results:
             yield m
 

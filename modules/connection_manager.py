@@ -42,6 +42,8 @@ class ConnectionManager(object):
         self.config = config
         self._collectors = []
         self._poll_thread = DataPoller(self, config)
+        # temporary blacklist of unreachable servers
+        self.blacklist = {}
 
     def get_inventory(self):
         """
@@ -75,6 +77,13 @@ class ConnectionManager(object):
         rm_connections = set(self.handles.keys())
         for sid in range(len(server_list)):
             server = server_list[sid]
+            # check if server is currently unreachable
+            if server in self.blacklist:
+                if self.blacklist[server] <= time.time():
+                    del self.blacklist[server]
+                else:
+                    continue
+
             if server in self.handles:
                 try:
                     self.handles[server].query_dn("sys")
@@ -85,14 +94,22 @@ class ConnectionManager(object):
                     if e.error_code == 552:
                         logger.debug("Refresh login to %s" % server)
                     else:
-                        logger.error("Problem refreshing %s:%s", server, str(e), extra={'server': server, 'error': e})
-                    del self.handles[server]
+                        logger.error("Problem refreshing %s:%s",
+                                    server, str(e), extra={'server': server, 'error': e})
+                    try:
+                        del self.handles[server]
+                    except: pass
 
             if server not in self.handles:
                 logger.debug("Login into %s" % server)
                 srv_obj = UcsmServer(server, self.creds['username'], self.creds['master_password'])
                 if not srv_obj.handle:
-                    logger.error("Problem creating login to %s", server, extra={'server': server})
+                    if self.config['retry_timeout'] > 0:
+                        self.blacklist[server] = time.time() + self.config['retry_timeout']
+                        logger.error("Problem creating login to %s. Retry in %s seconds",
+                                    server, self.config['retry_timeout'], extra={'server': server})
+                    else:
+                        logger.error("Problem creating login to %s", server, extra={'server': server})
                     continue
                     
                 handle = srv_obj.handle
@@ -111,7 +128,9 @@ class ConnectionManager(object):
         # remove old connections no longer in server list
         for s in rm_connections:
             logger.info("remove old server connection: %s", s)
-            del self.handles[s]
+            try:
+                del self.handles[s]
+            except: pass
 
         return self.handles
 
