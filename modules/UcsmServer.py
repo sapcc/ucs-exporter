@@ -1,3 +1,4 @@
+import re
 from ucsmsdk.ucshandle import UcsHandle
 from ucsmsdk.ucsexception import UcsException
 import master_password as master_pass
