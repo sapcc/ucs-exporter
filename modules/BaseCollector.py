@@ -25,28 +25,33 @@ class BaseCollector(ABC):
         for retry in range(2):
             try:
                 return fnc(*tuple(args), **dict(kwargs))
-                # yield data
             except urllib.error.URLError as e:
                 logger.error("URLError: ", server, e.reason)
             except UcsException as e:
                 if e.error_code == 552:
+                    logger.info("Session timeout UCS: %s. Retry #%s" % (e, retry))
                     # we need to login again
-                    handle.logout()
-                    handle.login()
+                    if hasattr(fnc, "__self__") and hasattr(fnc.__self__, "login"):
+                        fnc.__self__.logout()
+                        fnc.__self__.login()
+                    else:
+                        logger.warning("Could not determin login function for refresh.")
                 else:
                     logger.error("UCSException while query UCS: %s. Retry: %s" % (e, retry))
             except Exception as e:
                 logger.exception("Exception while query UCS: %s. Retry: %s" % (e, retry))
             else:
                 # data handler yielded without problems
-                return
-        return
+                return ()
+        return ()
     
     def collect(self):
         """Default implementation returns the last collected metrics"""
         #print("return cache: %s", self._last_results)
-        for m in self._last_results:
-            yield m
+        # we report metrics only once
+        results = self._last_results
+        while len(results):
+            yield results.pop(0)
 
     def update_cache(self):
         """Updates internal cache with latest query from servers"""

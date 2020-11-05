@@ -19,6 +19,7 @@ class DataPoller(threading.Thread):
 
     def run(self):
         while True:
+            logger.info("Poll servers")
             try:
                 start = time.time()
                 for collector in self.manager.get_collectors():
