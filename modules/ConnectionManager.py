@@ -103,7 +103,7 @@ class ConnectionManager(object):
 
             if server not in self.handles:
                 logger.debug("Login into %s" % server)
-                srv_obj = UcsmServer(server, self.creds['username'], self.creds['master_password'])
+                srv_obj = UcsmServer(server, self.creds['username'], self.creds['master_password'], self.config['domain'])
                 if not srv_obj.handle:
                     if self.config['retry_timeout'] > 0:
                         self.blacklist[server] = time.time() + self.config['retry_timeout']

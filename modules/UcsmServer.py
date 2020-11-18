@@ -6,10 +6,11 @@ from ucsmsdk.mometa.aaa.AaaUser import AaaUser
 import re
 
 class UcsmServer(object):
-    def __init__(self, ucs_server, user, master_password):
+    def __init__(self, ucs_server, user, master_password, domain=None):
         self.ucs_server = ucs_server
         self.user = user
         self.master_password = master_password
+        self.domain = domain
         self.password = self.get_password()
         self.handle = self._login()
 
@@ -28,7 +29,11 @@ class UcsmServer(object):
         """
         #print("Logging in first time !")
         #print((self.ucs_server, self.user, self.password))
-        handle = UcsHandle(self.ucs_server, self.user, self.password)
+        if self.domain:
+            user = self.domain + "\\" + self.user
+        else:
+            user = self.user
+        handle = UcsHandle(self.ucs_server, user, self.password)
 
         try:
             handle.login(timeout=5)

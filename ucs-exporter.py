@@ -40,6 +40,7 @@ def get_params():
     parser.add_option("-c", "--config", help="", action="store", dest="config")
     parser.add_option("-p", "--master-password", help="master password to decrypt mpw", action="store",
                       dest="master_password")
+    parser.add_option("-d", "--domain", help="domain used for login", action="store", dest="domain")
     parser.add_option("-u", "--user", help="user used with master password", action="store", dest="user")
     parser.add_option("-v", "--verbose", help="increase verbosity", dest="verbose", action='count', default=0)
     parser.add_option("-i", "--interval", dest="interval", type=int, help="poll data in seconds", default=30)
