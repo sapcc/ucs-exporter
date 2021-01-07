@@ -35,21 +35,19 @@ class UcsPortCollector(BaseCollector):
                 "oper_speed": oper_speed,
                 "admin_state": admin_state}
 
-    def collect_metrics(self):
+    def collect_metrics(self, server, handle):
         logger.debug("UcsPortCollector.collect()")
-        self.get_handles()
         globals().update(self.get_metrics())
 
-        for server, handle in self.get_handles():
-            for eth_p in self.query(handle.query_classid, "EtherPIo"):
-                port_name = "{}-{}-{}".format(eth_p.switch_id,
-                                              eth_p.aggr_port_id,
-                                              eth_p.rn)
+        for eth_p in self.query(handle.query_classid, "EtherPIo"):
+            port_name = "{}-{}-{}".format(eth_p.switch_id,
+                                            eth_p.aggr_port_id,
+                                            eth_p.rn)
 
-                labels = [server, port_name]
-                oper_state.add_metric(labels=labels, value=OP_STATE.get(eth_p.oper_state, OP_STATE['down']))
-                oper_speed.add_metric(labels=labels, value=SPEED.get(eth_p.oper_speed, SPEED['unknown']))
-                admin_state.add_metric(labels=labels, value=ADMIN_STATE.get(eth_p.admin_state, ADMIN_STATE['unknown']))
+            labels = [server, port_name]
+            oper_state.add_metric(labels=labels, value=OP_STATE.get(eth_p.oper_state, OP_STATE['down']))
+            oper_speed.add_metric(labels=labels, value=SPEED.get(eth_p.oper_speed, SPEED['unknown']))
+            admin_state.add_metric(labels=labels, value=ADMIN_STATE.get(eth_p.admin_state, ADMIN_STATE['unknown']))
 
         yield oper_state
         yield oper_speed

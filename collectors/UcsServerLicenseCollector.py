@@ -14,20 +14,20 @@ class UcsServerLicenseCollector(BaseCollector):
         }
 
     def get_metrics(self):
-        return {"license" : GaugeMetricFamily("ucs_server_license", "licenses")}
+        return {"license" : GaugeMetricFamily("ucs_server_license", "licenses",
+                                              labels=['server', 'port_name'])}
 
-    def collect_metrics(self):
+    def collect_metrics(self, server, handle):
         print("UcsServerLicenseCollector: Get Updated handles !")
-        self.get_handles()
 
-        g = GaugeMetricFamily('ucs_server_license', 'Information about port license',
-                              labels=['server', 'port_name'])
-        for server, handle in self.get_handles():
-            for eth_p in self.query(handle.query_classid, "EtherPIo"):
-                port_name = "{}-{}-{}".format(eth_p.switch_id,
-                                              eth_p.aggr_port_id,
-                                              eth_p.rn)
-                license_state = eth_p.lic_state
-                labels = [server, port_name]
-                g.add_metric(labels=labels, value=self.license_state[license_state])
+        g = self.get_metrics()["license"]
+
+        for eth_p in self.query(handle.query_classid, "EtherPIo"):
+            port_name = "{}-{}-{}".format(eth_p.switch_id,
+                                            eth_p.aggr_port_id,
+                                            eth_p.rn)
+            license_state = eth_p.lic_state
+            labels = [server, port_name]
+            g.add_metric(labels=labels, value=self.license_state[license_state])
+
         yield g

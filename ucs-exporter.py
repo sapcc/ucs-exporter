@@ -67,7 +67,7 @@ def register_collectors(params):
     """
     Start collector by registering
     :param params: arguments
-    :return:
+    :return: manager instance
     """
     creds = {"username": params['user'], "master_password": params['master_password']}
 
@@ -85,14 +85,13 @@ def register_collectors(params):
         REGISTRY.register(instance)
         manager.register_collector(instance)
 
-    manager.start_poll_thread()
+    return manager
 
 if __name__ == '__main__':
     params = get_params()
     print(params)
-    register_collectors(params)
+    manager = register_collectors(params)
     logger.info("Listening to port: %s" %params['port'])
     logger.info("Poll interval: %i" %params['interval'])
     start_http_server(params['port'])
-    while True:
-        time.sleep(10)
+    manager.run_check_loop()

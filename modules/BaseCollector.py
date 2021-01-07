@@ -14,7 +14,7 @@ class BaseCollector(ABC):
     def __init__(self, manager):
         self.manager = manager
         self.metrics = self.get_metrics()
-        self._last_results = []
+        self._last_results = {}
 
     def get_handles(self):
         """yields all available connections as (server, handle) tuples"""
@@ -49,22 +49,25 @@ class BaseCollector(ABC):
         """Default implementation returns the last collected metrics"""
         #print("return cache: %s", self._last_results)
         # we report metrics only once
-        results = self._last_results
-        while len(results):
-            yield results.pop(0)
+        for host, results in self._last_results.items():
+            while len(results):
+                yield results.pop(0)
 
-    def update_cache(self):
+    def update_cache(self, host):
         """Updates internal cache with latest query from servers"""
         new_data = []
-        for metric in self.collect_metrics():
+        handle = self.manager.get_handle(host)
+        if not handle:
+            logger.info("Empty handle for server %s" %host)
+        for metric in self.collect_metrics(host, handle):
             new_data.append(metric)
 
-        self._last_results = new_data
+        self._last_results[host] = new_data
 
     @abstractmethod
-    def collect_metrics(self):
+    def collect_metrics(self, host, handle):
         """Actual implementation that queries remote servers for metrics"""
-        pass
+        raise NotImplemented
 
     @abstractmethod
     def get_metrics(self):
@@ -88,18 +91,17 @@ class GenericClassCollector(BaseCollector):
                                           labels=self.LABELS)
         return rv
 
-    def collect_metrics(self):
+    def collect_metrics(self, server, handle):
         logger.debug("%s.collect()" % self.__class__.__name__)
         self.get_handles()
         mtr = self.get_metrics()
 
-        for server, handle in self.get_handles():
-            for port in self.query(handle.query_classid, self.CLASS):
-                port_name = port.dn
-                for key in self.KEYS:
-                    if hasattr(port, key):
-                        labels = [server, port_name]
-                        mtr[key].add_metric(labels=labels, value=getattr(port, key))
+        for port in self.query(handle.query_classid, self.CLASS):
+            port_name = port.dn
+            for key in self.KEYS:
+                if hasattr(port, key):
+                    labels = [server, port_name]
+                    mtr[key].add_metric(labels=labels, value=getattr(port, key))
 
         for m in mtr.values():
             yield m
