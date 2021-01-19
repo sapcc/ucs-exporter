@@ -7,12 +7,13 @@ from ucsmsdk.ucsexception import UcsException
 
 class UcsmCRCFaultCollector(BaseCollector):
     def get_metrics(self):
-        return {"crc": GaugeMetricFamily("ucsm_crc_error", "ucsm_crc_collector")}
+        return {"crc": GaugeMetricFamily("ucsm_crc_error",
+                                         "UCSM server CRC errors",
+                                         labels=['server', 'port'])
+                                         }
 
     def collect_metrics(self, server, handle):
-        self.get_handles()
-        g = GaugeMetricFamily('ucsm_crc_error', 'UCSM server CRC errors',
-                              labels=['server', 'port'])
+        g = self.get_metrics()['crc']
 
         errs = self.query(handle.query_classid, NamingId.ETHER_NI_ERR_STATS)
         for err in errs:
