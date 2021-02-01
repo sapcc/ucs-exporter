@@ -3,4 +3,5 @@ ucsmsdk
 ucscsdk
 prometheus_client
 pynetbox
+scrypt
 pyyaml

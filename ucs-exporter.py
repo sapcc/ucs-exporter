@@ -25,7 +25,8 @@ COLLECTORS = [
     "UcsPortStatsCollector.UcsPortRXStatsCollector",
     "UcsPortStatsCollector.UcsPortTXStatsCollector",
     "UcsmCRCFaultCollector",
-    "UcsmDIMMErrorsCollector"
+    "UcsmDIMMErrorsCollector",
+    "UcsmScalabilityPortStatus"
 ]
 
 logger = logging.getLogger("ucs-exporter")
