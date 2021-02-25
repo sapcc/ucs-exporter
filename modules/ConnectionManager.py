@@ -58,10 +58,12 @@ class ConnectionManager(object):
         server_list = []
         if 'netbox' in config and len(config['netbox']):
             from modules.Netbox import Netbox
-
-            netbox_data = config['netbox']
-            netbox_obj = Netbox(nb_config=netbox_data)
-            server_list += netbox_obj.get_ucsm_servers_from_regions(netbox_data["regions"])
+            try:
+                netbox_data = config['netbox']
+                netbox_obj = Netbox(nb_config=netbox_data)
+                server_list += netbox_obj.get_ucsm_servers_from_regions(netbox_data["regions"])
+            except:
+                logger.error("Problem getting server list from netbox")
         if 'servers' in config and type(config['servers']) == list:
             server_list += config['servers']
         logger.debug("Serverlist: %s" %server_list)
@@ -113,6 +115,7 @@ class ConnectionManager(object):
                                 server, self.config['retry_timeout'], extra={'server': server})
                 else:
                     logger.error("Problem creating login to %s", server, extra={'server': server})
+                return rv # rv should be False here
 
             handle = srv_obj.handle
             try:
@@ -132,8 +135,6 @@ class ConnectionManager(object):
         """
         server_list = self.get_inventory()
         logger.debug("Create handles for Ucsm Servers: %s", server_list)
-        #import traceback
-        #traceback.print_stack()
         # we iterate over the range to be able to modify the list in the loop body
         rm_connections = set(self.handles.keys())
         for sid in range(len(server_list)):
@@ -146,8 +147,6 @@ class ConnectionManager(object):
             self.start_poll_thread(server)
             # refresh otherwise the handle gets stale
 
-            #else:
-            #    rm_connections.remove(server)
         # remove old connections no longer in server list
         for s in rm_connections:
             logger.info("remove old server connection: %s", s)
@@ -207,6 +206,4 @@ class ConnectionManager(object):
         while True:
             logger.debug("check server threads")
             self.update_state()
-            # for server, handle in self.handles:
-            #     self.start_poll_thread(server)
             time.sleep(60)

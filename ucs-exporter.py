@@ -55,7 +55,6 @@ def get_params():
         if not options[option] and option in required:
             parser.print_help()
             parser.error("Argument {} can't be None ! \n".format(option))
-    print(options)
 
     loglevel = logging.INFO
     if options['verbose'] > 0:
@@ -91,7 +90,7 @@ def register_collectors(params):
 
 if __name__ == '__main__':
     params = get_params()
-    print(params)
+    logger.debug("Params are %s", params)
     manager = register_collectors(params)
     logger.info("Listening to port: %s" %params['port'])
     logger.info("Poll interval: %i" %params['interval'])
