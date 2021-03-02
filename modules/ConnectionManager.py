@@ -206,4 +206,4 @@ class ConnectionManager(object):
         while True:
             logger.debug("check server threads")
             self.update_state()
-            time.sleep(60)
+            time.sleep(300)
