@@ -206,4 +206,5 @@ class ConnectionManager(object):
         while True:
             logger.debug("check server threads")
             self.update_state()
-            time.sleep(300)
+            logger.debug("sleeping for scrape interval %s", self.config['scrape_interval'])
+            time.sleep(self.config['scrape_interval'])
