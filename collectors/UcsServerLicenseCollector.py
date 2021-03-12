@@ -14,13 +14,13 @@ class UcsServerLicenseCollector(BaseCollector):
         }
 
     def describe(self):
-        yield GaugeMetricFamily("ucs_server_license", "licenses")
+        yield GaugeMetricFamily("ucsm_server_license", "licenses")
 
     def collect(self):
         print("UcsServerLicenseCollector: Get Updated handles !")
         self.get_handles()
 
-        g = GaugeMetricFamily('ucs_server_license', 'Information about port license',
+        g = GaugeMetricFamily('ucsm_server_license', 'Information about port license',
                               labels=['server', 'port_name'])
         for server, handle in self.handles.items():
             try:
