@@ -14,7 +14,7 @@ class UcsServerLicenseCollector(BaseCollector):
         }
 
     def describe(self):
-        yield GaugeMetricFamily("ucs_server_license", "licenses")
+        yield GaugeMetricFamily("ucsm_server_license", "licenses")
 
     def collect(self):
         print("UcsServerLicenseCollector: Get Updated handles !")
