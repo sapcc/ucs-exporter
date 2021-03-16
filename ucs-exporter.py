@@ -9,18 +9,27 @@
 
 import time
 import optparse
+import logging
 
 from importlib import import_module
 from prometheus_client import start_http_server
 from prometheus_client.core import REGISTRY
+from modules.ConnectionManager import ConnectionManager
 
 COLLECTORS = [
     "UcsmCollector",
     "UcsServerLicenseCollector",
     "UcsmChassisFaultCollector",
-    "UcsmCRCFaultCollector"
+    "UcsPortCollector",
+    "UcsPortStatsCollector.UcsPortErrStatsCollector",
+    "UcsPortStatsCollector.UcsPortRXStatsCollector",
+    "UcsPortStatsCollector.UcsPortTXStatsCollector",
+    "UcsmCRCFaultCollector",
+    "UcsmDIMMErrorsCollector",
+    "UcsmScalabilityPortStatus"
 ]
 
+logger = logging.getLogger("ucs-exporter")
 
 def get_params():
     """
@@ -33,7 +42,14 @@ def get_params():
     parser.add_option("-c", "--config", help="", action="store", dest="config")
     parser.add_option("-p", "--master-password", help="master password to decrypt mpw", action="store",
                       dest="master_password")
+    parser.add_option("-d", "--domain", help="domain used for login", action="store", dest="domain")
     parser.add_option("-u", "--user", help="user used with master password", action="store", dest="user")
+    parser.add_option("-v", "--verbose", help="increase verbosity", dest="verbose", action='count', default=0)
+    parser.add_option("-i", "--interval", dest="interval", type=int, help="poll data in seconds", default=300)
+    parser.add_option("-s", "--scrape_interval", dest="scrape_interval", type=int,
+                      help="scrape data interval for internal cache", default=300)
+    parser.add_option("-r", "--retry-timeout", dest="retry_timeout", type=int, help="Retry unreachable servers after N seconds", default=60)
+    parser.add_option("--port", help="Port to listen on", dest="port", type=int, default=9876)
 
     (options, args) = parser.parse_args()
     options = vars(options)
@@ -41,7 +57,12 @@ def get_params():
         if not options[option] and option in required:
             parser.print_help()
             parser.error("Argument {} can't be None ! \n".format(option))
-    print(options)
+
+    loglevel = logging.INFO
+    if options['verbose'] > 0:
+        loglevel = logging.DEBUG
+    logging.basicConfig(level=loglevel)
+
     return options
 
 
@@ -49,19 +70,31 @@ def register_collectors(params):
     """
     Start collector by registering
     :param params: arguments
-    :return:
+    :return: manager instance
     """
     creds = {"username": params['user'], "master_password": params['master_password']}
 
+    manager = ConnectionManager(creds, params)
     # Register collectors
     for collector in COLLECTORS:
-        REGISTRY.register(getattr(import_module("collectors.{}".format(
-                                collector)), collector)(creds, params['config']))
+        if "." in collector:
+            mod, name = collector.split(".", 1)
+            instance = getattr(import_module("collectors.{}".format(mod)), name)(manager)
 
+        else:
+            instance = getattr(import_module("collectors.{}".format(collector)), collector)(manager)
+
+        logger.debug("Register collector: %s", instance)
+        REGISTRY.register(instance)
+        manager.register_collector(instance)
+
+    return manager
 
 if __name__ == '__main__':
     params = get_params()
-    register_collectors(params)
-    start_http_server(9876)
-    while True:
-        time.sleep(10)
+    logger.debug("Params are %s", params)
+    manager = register_collectors(params)
+    logger.info("Listening to port: %s" %params['port'])
+    logger.info("Poll interval: %i" %params['interval'])
+    start_http_server(params['port'])
+    manager.run_check_loop()

@@ -1,0 +1,14 @@
+{
+    "netbox": {
+        "netbox_url": "",
+        "netbox_token": "",
+        "ucs_hostname_format": "",
+        "regions": [],
+        "tenant": "",
+        "query": "",
+        "status": ""
+    },
+    "servers": [
+        "exampleserver"
+    ]
+}
