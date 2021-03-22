@@ -1,4 +1,4 @@
-import json
+import yaml
 import logging
 import threading
 import time
@@ -176,7 +176,7 @@ class ConnectionManager(object):
         :return:
         """
         with open(self.config['config']) as conf:
-            content = json.load(conf)
+            content = yaml.safe_load(conf)
         if key:
             return content[key]
         else:

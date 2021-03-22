@@ -6,3 +6,6 @@ netbox:
     tenant: ""
     query: ""
     status: ""
+servers:
+    - "<server>"
+     
