@@ -44,10 +44,9 @@ class BaseCollector(ABC):
                 # data handler yielded without problems
                 return ()
         return ()
-    
+
     def collect(self):
         """Default implementation returns the last collected metrics"""
-        #print("return cache: %s", self._last_results)
         # we report metrics only once
         for host, results in self._last_results.items():
             while len(results):

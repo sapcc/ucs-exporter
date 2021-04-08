@@ -1,8 +1,12 @@
 import urllib
+import logging
 from prometheus_client.core import GaugeMetricFamily
 from modules.BaseCollector import BaseCollector
 from ucsmsdk.ucsconstants import NamingId
 from ucsmsdk.ucsexception import UcsException
+
+
+logger = logging.getLogger("UcsmCRCCollector")
 
 
 class UcsmCRCFaultCollector(BaseCollector):
@@ -13,6 +17,7 @@ class UcsmCRCFaultCollector(BaseCollector):
                                          }
 
     def collect_metrics(self, server, handle):
+        logger.info("Collecting Metrics ")
         g = self.get_metrics()['crc']
 
         errs = self.query(handle.query_classid, NamingId.ETHER_NI_ERR_STATS)
