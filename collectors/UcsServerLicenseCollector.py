@@ -1,7 +1,9 @@
 import urllib
 from prometheus_client.core import GaugeMetricFamily
 from modules.BaseCollector import BaseCollector
+import logging
 
+logger = logging.getLogger("UcsServerLicenseCollector")
 
 class UcsServerLicenseCollector(BaseCollector):
     def __init__(self, manager):
@@ -18,7 +20,7 @@ class UcsServerLicenseCollector(BaseCollector):
                                               labels=['server', 'port_name'])}
 
     def collect_metrics(self, server, handle):
-        print("UcsServerLicenseCollector: Get Updated handles !")
+        logger.info("UcsServerLicenseCollector: Get Updated handles !")
 
         g = self.get_metrics()["license"]
 

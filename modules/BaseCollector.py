@@ -26,7 +26,7 @@ class BaseCollector(ABC):
             try:
                 return fnc(*tuple(args), **dict(kwargs))
             except urllib.error.URLError as e:
-                logger.error("URLError: ", server, e.reason)
+                logger.error("URLError: {0} - {1}".format(server, e.reason))
             except UcsException as e:
                 if e.error_code == 552:
                     logger.info("Session timeout UCS: %s. Retry #%s" % (e, retry))
@@ -47,10 +47,11 @@ class BaseCollector(ABC):
     
     def collect(self):
         """Default implementation returns the last collected metrics"""
-        #print("return cache: %s", self._last_results)
         # we report metrics only once
         for host, results in self._last_results.items():
             while len(results):
+                logger.debug("Host: %s", host)
+                logger.debug("Result: %s", result)
                 yield results.pop(0)
 
     def update_cache(self, host):
@@ -67,7 +68,7 @@ class BaseCollector(ABC):
     @abstractmethod
     def collect_metrics(self, host, handle):
         """Actual implementation that queries remote servers for metrics"""
-        raise NotImplemented
+        raise NotImplementedError
 
     @abstractmethod
     def get_metrics(self):

@@ -7,7 +7,7 @@ from ucsmsdk.ucsexception import UcsException
 from modules.UcsmServer import UcsmServer
 
 
-logger = logging.getLogger("BaseCollector")
+logger = logging.getLogger("ConnectionManager")
 
 
 class DataPoller(threading.Thread):
@@ -196,7 +196,7 @@ class ConnectionManager(object):
         if current:
             if not current.is_alive():
                 # thread is dead, create a new one
-                self._poll_threads.delete(host)
+                self._poll_threads.pop(host)
             else:
                 return current
         current = self._poll_threads[host] = DataPoller(self, self.config, host)
