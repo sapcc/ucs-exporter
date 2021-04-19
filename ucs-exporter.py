@@ -99,4 +99,7 @@ if __name__ == '__main__':
     logger.info("Listening to port: %s" %params['port'])
     logger.info("Poll interval: %i" %params['interval'])
     start_http_server(params['port'])
-    manager.run_check_loop()
+    try:
+        manager.run_check_loop()
+    except KeyboardInterrupt:
+        logger.info("Stopping UCS-Exporter")    
