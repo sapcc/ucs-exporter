@@ -10,6 +10,7 @@
 import time
 import optparse
 import logging
+import sys
 
 from importlib import import_module
 from prometheus_client import start_http_server
@@ -58,10 +59,11 @@ def get_params():
             parser.print_help()
             parser.error("Argument {} can't be None ! \n".format(option))
 
+    format = '%(asctime)-15s %(process)d %(levelname)s %(filename)s:%(lineno)d %(message)s'
     loglevel = logging.INFO
     if options['verbose'] > 0:
         loglevel = logging.DEBUG
-    logging.basicConfig(level=loglevel)
+    logging.basicConfig(level=loglevel, stream=sys.stdout, format=format)
 
     return options
 
