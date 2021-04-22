@@ -86,7 +86,7 @@ def register_collectors(params):
         else:
             instance = getattr(import_module("collectors.{}".format(collector)), collector)(manager)
 
-        logger.debug("Register collector: %s", instance)
+        logger.debug("Register collector: %s", collector)
         REGISTRY.register(instance)
         manager.register_collector(instance)
 
