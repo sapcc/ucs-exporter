@@ -24,7 +24,7 @@ class UcsmChassisFaultCollector(BaseCollector):
         chassis = self.query(handle.query_children, sys, class_id="EquipmentChassis")
         for chassi in chassis:
             faults = self.query(handle.query_children, chassi, class_id="FaultInst")
-            logger.debug("Faults : %s %s", faults, server)
+            logger.debug(f"Faults : { faults } { server }")
             if faults:
                 for fault in faults:
                     g.add_metric(labels=[server, fault.cause, fault.severity, fault.descr],

@@ -84,7 +84,7 @@ def register_collectors(params):
         else:
             instance = getattr(import_module("collectors.{}".format(collector)), collector)(manager)
 
-        logger.debug("Register collector: %s", instance)
+        logger.debug(f"Register collector: { instance }")
         REGISTRY.register(instance)
         manager.register_collector(instance)
 
@@ -92,9 +92,9 @@ def register_collectors(params):
 
 if __name__ == '__main__':
     params = get_params()
-    logger.debug("Params are %s", params)
+    logger.debug(f"Params are { params }")
     manager = register_collectors(params)
-    logger.info("Listening to port: %s" %params['port'])
-    logger.info("Poll interval: %i" %params['interval'])
+    logger.info(f"Listening to port: { params['port'] }")
+    logger.info("Poll interval: { params['interval'] }")
     start_http_server(params['port'])
     manager.run_check_loop()
