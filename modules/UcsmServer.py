@@ -39,10 +39,10 @@ class UcsmServer(object):
         try:
             handle.login(timeout=5)
         except OSError as e:
-            logger.error("Problem logging in to {0}:{1}".format(self.ucs_server, str(e)))
+            logger.error("Problem logging in to {0}: {1}".format(self.ucs_server, str(e)))
             return
         except UcsException as e:
-            logger.error("Problem logging in to {0}:{1}".format(self.ucs_server, str(e)))
+            logger.error("Problem logging in to {0}: {1}".format(self.ucs_server, str(e)))
             return
 
         return handle
