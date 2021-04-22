@@ -24,10 +24,10 @@ class UcsmChassisFaultCollector(BaseCollector):
         for chassi in chassis:
             faults = self.query(handle.query_children, chassi, class_id="FaultInst")
             if faults:
-                logger.info("{0}: {1} Faults detected: {2}".format(server, chassi.rn, faults))
+                logger.info("{0}: {1} Faults detected: {2}".format(server, chassi.dn, faults))
                 for fault in faults:
-                    g.add_metric(labels=[server, fault.cause, chassi.rn, fault.severity, fault.descr], value=1)
+                    g.add_metric(labels=[server, fault.cause, chassi.dn, fault.severity, fault.descr], value=1)
             else:
-                logger.info("{0}: {1} No Faults detected.".format(server, chassi.rn))
-                g.add_metric(labels=[server, chassi.rn], value=0)
+                logger.info("{0}: {1} No Faults detected.".format(server, chassi.dn))
+                g.add_metric(labels=[server, chassi.dn], value=0)
         yield g
