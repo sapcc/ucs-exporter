@@ -26,10 +26,10 @@ class BaseCollector(ABC):
             try:
                 return fnc(*tuple(args), **dict(kwargs))
             except urllib.error.URLError as e:
-                logger.error("URLError: ", server, e.reason)
+                logger.error(f"URLError: { server } { e.reason }")
             except UcsException as e:
                 if e.error_code == 552:
-                    logger.info("Session timeout UCS: %s. Retry #%s" % (e, retry))
+                    logger.info(f"Session timeout UCS: { e }. Retry # { retry }")
                     # we need to login again
                     if hasattr(fnc, "__self__") and hasattr(fnc.__self__, "login"):
                         fnc.__self__.logout()
@@ -37,9 +37,9 @@ class BaseCollector(ABC):
                     else:
                         logger.warning("Could not determin login function for refresh.")
                 else:
-                    logger.error("UCSException while query UCS: %s. Retry: %s" % (e, retry))
+                    logger.error(f"UCSException while query UCS: { e }. Retry: { retry }")
             except Exception as e:
-                logger.exception("Exception while query UCS: %s. Retry: %s" % (e, retry))
+                logger.exception(f"Exception while query UCS: { e }. Retry: { retry }")
             else:
                 # data handler yielded without problems
                 return ()
@@ -57,7 +57,7 @@ class BaseCollector(ABC):
         new_data = []
         handle = self.manager.get_handle(host)
         if not handle:
-            logger.info("Empty handle for server %s" %host)
+            logger.info(f"Empty handle for server { host }")
         for metric in self.collect_metrics(host, handle):
             new_data.append(metric)
 
@@ -91,7 +91,7 @@ class GenericClassCollector(BaseCollector):
         return rv
 
     def collect_metrics(self, server, handle):
-        logger.debug("%s.collect()" % self.__class__.__name__)
+        logger.debug(f"{ self.__class__.__name__ }.collect()")
         self.get_handles()
         mtr = self.get_metrics()
 

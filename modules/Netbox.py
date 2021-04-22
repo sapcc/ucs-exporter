@@ -28,7 +28,7 @@ class Netbox:
         try:
             av_zones = self.nb.dcim.sites.filter(region=region)
         except pynetbox.RequestError as e:
-            logger.exception("Netbox exception : %s", e.error)
+            logger.exception(f"Netbox exception : { e.error }")
         return av_zones
 
     def get_all_bb_from_av_zones(self, av_zones):
@@ -44,7 +44,7 @@ class Netbox:
                                                           status=self.nb_config["status"], site=av_zone)
                 bbs.setdefault(av_zone, []).extend([ucs.name.split("-")[1].lower() for ucs in ucs_servers])
             except pynetbox.RequestError as e:
-                logger.exception("Netbox exception : %s", e.error)
+                logger.exception(f"Netbox exception : { e.error }")
         return bbs
 
     def get_all_bb_from_regions(self, regions):
@@ -60,7 +60,7 @@ class Netbox:
                                                           status=self.nb_config["status"], region=region)
                 bbs.setdefault(region, []).extend([ucs.name.split("-")[1].lower() for ucs in ucs_servers])
             except pynetbox.RequestError as e:
-                logger.exception("Netbox exception : %s", e.error)
+                logger.exception(f"Netbox exception : { e.error }")
         return bbs
 
     def get_ucsm_servers_from_regions(self, regions):
