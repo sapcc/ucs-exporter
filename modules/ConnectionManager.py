@@ -28,7 +28,7 @@ class DataPoller(threading.Thread):
                 start = time.time()
                 for collector in self.manager.get_collectors():
                     try:
-                        logger.debug("Collect %s : %s ", self.host, collector)
+                        logger.info("Collect %s: %s ", self.host, collector.__class__.__name__)
                         collector.update_cache(self.host)
                     except Exception as e:
                         logger.exception("Exception in Collector: %s", e)
@@ -111,7 +111,7 @@ class ConnectionManager(object):
             if not srv_obj.handle:
                 if self.config['retry_timeout'] > 0:
                     self.blacklist[server] = time.time() + self.config['retry_timeout']
-                    logger.error("Problem creating login to %s. Retry in %s seconds",
+                    logger.error("Problem creating login to %s. Retry in %s seconds.", 
                                 server, self.config['retry_timeout'], extra={'server': server})
                 else:
                     logger.error("Problem creating login to %s", server, extra={'server': server})
@@ -175,8 +175,13 @@ class ConnectionManager(object):
 
         :return:
         """
-        with open(self.config['config']) as conf:
-            content = yaml.safe_load(conf)
+        try:
+            with open(self.config['config']) as conf:
+                content = yaml.safe_load(conf)
+        except FileNotFoundError as e:
+            logger.error("Config File not found (%s): %s", self.config['config'], str(e))
+            exit(1)
+
         if key:
             return content[key]
         else:
