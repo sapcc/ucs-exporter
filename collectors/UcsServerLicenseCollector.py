@@ -25,11 +25,8 @@ class UcsServerLicenseCollector(BaseCollector):
         g = self.get_metrics()["license"]
 
         for eth_p in self.query(handle.query_classid, "EtherPIo"):
-            port_name = "{}-{}-{}".format(eth_p.switch_id,
-                                            eth_p.aggr_port_id,
-                                            eth_p.rn)
             license_state = eth_p.lic_state
-            labels = [server, port_name]
+            labels = [server, eth_p.dn]
             g.add_metric(labels=labels, value=self.license_state[license_state])
 
         yield g
