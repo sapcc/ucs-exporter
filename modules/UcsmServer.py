@@ -34,10 +34,10 @@ class UcsmServer(object):
             user = self.domain + "\\" + self.user
         else:
             user = self.user
-        handle = UcsHandle(self.ucs_server, user, self.password)
+        handle = UcsHandle(self.ucs_server, user, self.password, timeout=5)
 
         try:
-            handle.login(timeout=5)
+            handle.login()
         except OSError as e:
             logger.error("Problem logging in to {0}: {1}".format(self.ucs_server, str(e)))
             return
