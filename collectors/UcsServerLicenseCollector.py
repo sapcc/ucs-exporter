@@ -22,7 +22,7 @@ class UcsServerLicenseCollector(BaseCollector):
                                               labels=['server', 'port_name'])}
 
     def collect_metrics(self, server, handle):
-        logger.info("Collecting Metrics ")
+        logger.debug("Collecting Metrics ")
 
         g = self.get_metrics()["license"]
 

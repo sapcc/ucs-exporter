@@ -17,7 +17,7 @@ class UcsmCRCFaultCollector(BaseCollector):
                                          }
 
     def collect_metrics(self, server, handle):
-        logger.info("Collecting Metrics ")
+        logger.debug("Collecting Metrics ")
         g = self.get_metrics()['crc']
 
         errs = self.query(handle.query_classid, NamingId.ETHER_NI_ERR_STATS)

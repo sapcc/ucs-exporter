@@ -24,7 +24,7 @@ class UcsmScalabilityPortStatus(BaseCollector):
                                          }
 
     def collect_metrics(self, server, handle):
-        logger.info("Collecting Metrics ")
+        logger.debug("Collecting Metrics ")
         g = self.get_metrics()['scalability']
 
         ports = self.query(handle.query_classid, "FabricEthLanPcEp")

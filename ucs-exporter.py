@@ -95,6 +95,6 @@ if __name__ == '__main__':
     logger.debug(f"Params are { params }")
     manager = register_collectors(params)
     logger.info(f"Listening to port: { params['port'] }")
-    logger.info("Poll interval: { params['interval'] }")
+    logger.info(f"Poll interval: { params['interval'] }")
     start_http_server(params['port'])
     manager.run_check_loop()

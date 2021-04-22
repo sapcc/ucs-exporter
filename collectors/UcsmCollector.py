@@ -13,7 +13,7 @@ class UcsmCollector(BaseCollector):
         return {"info": InfoMetricFamily('ucsm_info', 'UCSM server information', labels=["server", "firmware_version"])}
 
     def collect_metrics(self, server, handle):
-        logger.info("Collecting Metrics ")
+        logger.debug("Collecting Metrics ")
         g = self.get_metrics()['info']
 
         sys = self.query(handle.query_dn, "sys")
