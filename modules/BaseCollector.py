@@ -50,8 +50,6 @@ class BaseCollector(ABC):
         # we report metrics only once
         for host, results in self._last_results.items():
             while len(results):
-                logger.debug("Host: %s", host)
-                logger.debug("Result: %s", result)
                 yield results.pop(0)
 
     def update_cache(self, host):
