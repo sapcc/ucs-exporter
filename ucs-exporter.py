@@ -10,6 +10,7 @@
 import time
 import optparse
 import logging
+import sys
 
 from importlib import import_module
 from prometheus_client import start_http_server
@@ -58,10 +59,11 @@ def get_params():
             parser.print_help()
             parser.error("Argument {} can't be None ! \n".format(option))
 
+    format = '%(asctime)-15s %(process)d %(levelname)s %(filename)s:%(lineno)d %(message)s'
     loglevel = logging.INFO
     if options['verbose'] > 0:
         loglevel = logging.DEBUG
-    logging.basicConfig(level=loglevel)
+    logging.basicConfig(level=loglevel, stream=sys.stdout, format=format)
 
     return options
 
@@ -97,4 +99,7 @@ if __name__ == '__main__':
     logger.info(f"Listening to port: { params['port'] }")
     logger.info(f"Poll interval: { params['interval'] }")
     start_http_server(params['port'])
-    manager.run_check_loop()
+    try:
+        manager.run_check_loop()
+    except KeyboardInterrupt:
+        logger.info("Stopping UCS-Exporter")

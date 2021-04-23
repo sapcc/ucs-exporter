@@ -40,11 +40,7 @@ class UcsPortCollector(BaseCollector):
         globals().update(self.get_metrics())
 
         for eth_p in self.query(handle.query_classid, "EtherPIo"):
-            port_name = "{}-{}-{}".format(eth_p.switch_id,
-                                            eth_p.aggr_port_id,
-                                            eth_p.rn)
-
-            labels = [server, port_name]
+            labels = [server, eth_p.dn]
             oper_state.add_metric(labels=labels, value=OP_STATE.get(eth_p.oper_state, OP_STATE['down']))
             oper_speed.add_metric(labels=labels, value=SPEED.get(eth_p.oper_speed, SPEED['unknown']))
             admin_state.add_metric(labels=labels, value=ADMIN_STATE.get(eth_p.admin_state, ADMIN_STATE['unknown']))

@@ -7,7 +7,7 @@ from ucsmsdk.ucsexception import UcsException
 from modules.UcsmServer import UcsmServer
 
 
-logger = logging.getLogger("BaseCollector")
+logger = logging.getLogger("ConnectionManager")
 
 
 class DataPoller(threading.Thread):
@@ -175,8 +175,13 @@ class ConnectionManager(object):
 
         :return:
         """
-        with open(self.config['config']) as conf:
-            content = yaml.safe_load(conf)
+        try:
+            with open(self.config['config']) as conf:
+                content = yaml.safe_load(conf)
+        except FileNotFoundError as e:
+            logger.error("Config File not found (%s): %s", self.config['config'], str(e))
+            exit(1)
+
         if key:
             return content[key]
         else:
@@ -196,7 +201,7 @@ class ConnectionManager(object):
         if current:
             if not current.is_alive():
                 # thread is dead, create a new one
-                self._poll_threads.delete(host)
+                self._poll_threads.pop(host)
             else:
                 return current
         current = self._poll_threads[host] = DataPoller(self, self.config, host)

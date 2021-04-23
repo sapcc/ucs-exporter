@@ -1,8 +1,8 @@
 import urllib
+import logging
 from prometheus_client.core import InfoMetricFamily
 from modules.BaseCollector import BaseCollector
 from ucsmsdk.ucsexception import UcsException
-import logging
 
 
 logger = logging.getLogger("UcsmCollector")

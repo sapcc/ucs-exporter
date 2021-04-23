@@ -4,7 +4,6 @@ from ucsmsdk.ucshandle import UcsHandle
 from ucsmsdk.ucsexception import UcsException
 import master_password as master_pass
 from ucsmsdk.mometa.aaa.AaaUser import AaaUser
-import re
 
 
 logger = logging.getLogger("UcsmServer")
@@ -36,10 +35,10 @@ class UcsmServer(object):
             user = self.domain + "\\" + self.user
         else:
             user = self.user
-        handle = UcsHandle(self.ucs_server, user, self.password)
+        handle = UcsHandle(self.ucs_server, user, self.password, timeout=5)
 
         try:
-            handle.login(timeout=5)
+            handle.login()
         except OSError as e:
             logger.error(f"Problem logging in to { self.ucs_server } { str(e) }")
             return
@@ -58,5 +57,4 @@ class UcsmServer(object):
             return pwd
         esc_unsupported_re = '[' + re.escape( unsupported_chars ) + ']'
         safe_pass = re.sub( esc_unsupported_re, repl, pwd )
-        # echo("unsupported_chars: %s -> %s"%(unsupported_chars, safe_pass))
         return safe_pass

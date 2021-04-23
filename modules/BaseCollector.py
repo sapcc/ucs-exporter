@@ -66,7 +66,7 @@ class BaseCollector(ABC):
     @abstractmethod
     def collect_metrics(self, host, handle):
         """Actual implementation that queries remote servers for metrics"""
-        raise NotImplemented
+        raise NotImplementedError
 
     @abstractmethod
     def get_metrics(self):
