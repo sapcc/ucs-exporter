@@ -1,12 +1,13 @@
 import re
+import logging
 from ucsmsdk.ucshandle import UcsHandle
 from ucsmsdk.ucsexception import UcsException
 import master_password as master_pass
 from ucsmsdk.mometa.aaa.AaaUser import AaaUser
-import re
-import logging
+
 
 logger = logging.getLogger("UcsmServer")
+
 
 class UcsmServer(object):
     def __init__(self, ucs_server, user, master_password, domain=None):
@@ -39,10 +40,10 @@ class UcsmServer(object):
         try:
             handle.login()
         except OSError as e:
-            logger.error("Problem logging in to {0}: {1}".format(self.ucs_server, str(e)))
+            logger.error(f"Problem logging in to { self.ucs_server } { str(e) }")
             return
         except UcsException as e:
-            logger.error("Problem logging in to {0}: {1}".format(self.ucs_server, str(e)))
+            logger.error(f"Problem logging in to { self.ucs_server } { str(e) }")
             return
 
         return handle

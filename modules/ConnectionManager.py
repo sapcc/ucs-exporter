@@ -21,22 +21,22 @@ class DataPoller(threading.Thread):
         self.host = host
 
     def run(self):
-        logger.info("Start collecting metrics from %s, interval: %s" % (self.host, self.config["interval"]))
+        logger.info(f"Start collecting metrics from { self.host }, interval: { self.config['interval'] }")
         while True:
-            logger.info("Poll server %s" % self.host)
+            logger.info(f"Poll server { self.host }")
             try:
                 start = time.time()
                 for collector in self.manager.get_collectors():
                     try:
-                        logger.info("Collect %s: %s ", self.host, collector.__class__.__name__)
+                        logger.debug(f"Collect { self.host } : { collector }")
                         collector.update_cache(self.host)
                     except Exception as e:
-                        logger.exception("Exception in Collector: %s", e)
+                        logger.exception(f"Exception in Collector: { e }")
                 wait = max(0,  self.config["interval"] - (time.time() - start))
                 if wait > 0:
                     time.sleep(wait)
             except Exception as e:
-                logger.exception("Exception in Poller Thread: %s", e)
+                logger.exception(f"Exception in Poller Thread: { e }")
 
 
 class ConnectionManager(object):
@@ -66,7 +66,7 @@ class ConnectionManager(object):
                 logger.error("Problem getting server list from netbox")
         if 'servers' in config and type(config['servers']) == list:
             server_list += config['servers']
-        logger.debug("Serverlist: %s" %server_list)
+        logger.debug(f"Serverlist: { server_list }")
         return server_list
 
     def get_handle(self, host):
@@ -93,28 +93,28 @@ class ConnectionManager(object):
         if server in self.handles:
             try:
                 self.handles[server].query_dn("sys")
-                logger.debug("test query to %s successful" % server)
+                logger.debug(f"test query to { server } successful")
                 rv = True
             except UcsException as e:
                 if e.error_code == 552:
-                    logger.debug("Refresh login to %s" % server)
+                    logger.debug(f"Refresh login to { server }")
                 else:
-                    logger.error("Problem refreshing %s:%s",
-                                server, str(e), extra={'server': server, 'error': e})
+                    logger.error(f"Problem refreshing { server }:{ e }",
+                                 extra={'server': server, 'error': e})
                 try:
                     rv = False
                 except: pass
 
         if server not in self.handles:
-            logger.debug("Login into %s" % server)
+            logger.debug(f"Login into { server }")
             srv_obj = UcsmServer(server, self.creds['username'], self.creds['master_password'], self.config['domain'])
             if not srv_obj.handle:
                 if self.config['retry_timeout'] > 0:
                     self.blacklist[server] = time.time() + self.config['retry_timeout']
-                    logger.error("Problem creating login to %s. Retry in %s seconds.", 
-                                server, self.config['retry_timeout'], extra={'server': server})
+                    logger.error(f"Problem creating login to { server }. Retry in { self.config['retry_timeout'] } seconds",
+                                 extra={'server': server})
                 else:
-                    logger.error("Problem creating login to %s", server, extra={'server': server})
+                    logger.error(f"Problem creating login to { server }", extra={'server': server})
                 return rv # rv should be False here
 
             handle = srv_obj.handle
@@ -123,7 +123,7 @@ class ConnectionManager(object):
                     self.handles[server] = handle
                     rv = True
             except Exception as e:
-                logger.error("Problem logging in to %s:%s", server, str(e), extra={'server': server, 'error': e})
+                logger.error(f"Problem logging in to { server }: { e }", extra={'server': server, 'error': e})
                 rv = False
         return rv
 
@@ -134,7 +134,7 @@ class ConnectionManager(object):
                 e.g. self.handles = {"server_name": "<server_handle>", ...}
         """
         server_list = self.get_inventory()
-        logger.debug("Create handles for Ucsm Servers: %s", server_list)
+        logger.debug(f"Create handles for Ucsm Servers: { server_list }")
         # we iterate over the range to be able to modify the list in the loop body
         rm_connections = set(self.handles.keys())
         for sid in range(len(server_list)):
@@ -149,7 +149,7 @@ class ConnectionManager(object):
 
         # remove old connections no longer in server list
         for s in rm_connections:
-            logger.info("remove old server connection: %s", s)
+            logger.info(f"remove old server connection: { s }")
             try:
                 del self.handles[s]
             except: pass
@@ -164,7 +164,7 @@ class ConnectionManager(object):
         """
         rm = []
         for server, handle in self.handles.items():
-            logger.info("Logging out from server {}".format(server))
+            logger.info(f"Logging out from server { server }")
             handle.logout()
             rm.append(server)
         for s in rm:
@@ -191,7 +191,7 @@ class ConnectionManager(object):
         if collector not in self._collectors:
             self._collectors.append(collector)
         else:
-            logger.error("Collector %s is already registered", collector)
+            logger.error(f"Collector { collector } is already registered")
 
     def get_collectors(self):
         return self._collectors
@@ -211,5 +211,5 @@ class ConnectionManager(object):
         while True:
             logger.debug("check server threads")
             self.update_state()
-            logger.debug("sleeping for scrape interval %s", self.config['scrape_interval'])
+            logger.debug(f"sleeping for scrape interval { self.config['scrape_interval'] }")
             time.sleep(self.config['scrape_interval'])

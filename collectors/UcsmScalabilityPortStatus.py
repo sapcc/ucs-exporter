@@ -1,8 +1,12 @@
 import urllib
+import logging
 from prometheus_client.core import GaugeMetricFamily
 from modules.BaseCollector import BaseCollector
 from ucsmsdk.ucsconstants import NamingId
 from ucsmsdk.ucsexception import UcsException
+
+
+logger = logging.getLogger("UcsmScalabilityPortCollector")
 
 
 class UcsmScalabilityPortStatus(BaseCollector):
@@ -20,6 +24,7 @@ class UcsmScalabilityPortStatus(BaseCollector):
                                          }
 
     def collect_metrics(self, server, handle):
+        logger.debug("Collecting Metrics ")
         g = self.get_metrics()['scalability']
 
         ports = self.query(handle.query_classid, "FabricEthLanPcEp")
