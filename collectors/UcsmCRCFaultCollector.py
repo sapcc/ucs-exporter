@@ -1,4 +1,3 @@
-import urllib
 import logging
 from prometheus_client.core import GaugeMetricFamily
 from modules.BaseCollector import BaseCollector
