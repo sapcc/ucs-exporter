@@ -19,6 +19,8 @@ from modules.ConnectionManager import ConnectionManager
 
 COLLECTORS = [
     "UcsmCollector",
+    "UcsmVIFCollector",
+    "UcsmFaultCollector",
     "UcsServerLicenseCollector",
     "UcsmChassisFaultCollector",
     "UcsPortCollector",

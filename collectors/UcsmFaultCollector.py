@@ -8,7 +8,7 @@ import logging
 logger = logging.getLogger("UcsmFaultCollector")
 
 
-class UcsmVIFCollector(BaseCollector):
+class UcsmFaultCollector(BaseCollector):
     def get_metrics(self):
         return {
             "fault": GaugeMetricFamily("ucsm_fault", "UCSM fault Status", labels=['server', 'type', 'description', 'dn'])
