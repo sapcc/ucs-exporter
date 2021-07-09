@@ -17,9 +17,11 @@ class UcsmFaultCollector(BaseCollector):
     def collect_metrics(self, server, handle):
 
         values = {
-            "major": 1,
+            "cleared": 0,
+            "critical": 4,
+            "major": 3,
             "warning": 2,
-            "info": 3
+            "info": 1
         }
 
         g = self.get_metrics()['fault']
@@ -29,7 +31,7 @@ class UcsmFaultCollector(BaseCollector):
         for fault in fault_inst:
             severity = values[fault.severity]
             # only add metrics for warning and major for now
-            if severity < 3:
+            if severity > 1:
                 g.add_metric(labels=[server, fault.type, fault.descr, fault.dn], value=severity)
 
         yield g
