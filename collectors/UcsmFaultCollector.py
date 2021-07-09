@@ -26,12 +26,15 @@ class UcsmFaultCollector(BaseCollector):
 
         g = self.get_metrics()['fault']
 
-        fault_inst = self.query(handle.query_classid, NamingId.FAULT_INST)
+        faults = self.query(handle.query_classid, NamingId.FAULT_INST)
 
-        for fault in fault_inst:
-            severity = values[fault.severity]
-            # only add metrics for warning and major for now
-            if severity > 1:
-                g.add_metric(labels=[server, fault.type, fault.descr, fault.dn], value=severity)
+        if faults:
+            for fault in faults:
+                severity = values[fault.severity]
+                # only add metrics for warning, major and critical for now
+                if severity > 1:
+                    g.add_metric(labels=[server, fault.type, fault.descr, fault.dn], value=severity)
+        else:
+            logger.info("{0}: No Faults detected.".format(server))
 
         yield g
