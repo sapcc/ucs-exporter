@@ -30,7 +30,7 @@ class UcsmChassisFaultCollector(BaseCollector):
             if faults:
                 for fault in faults:
                     logger.info("{0}: {1} Faults detected: {2}".format(server, chassi.dn, fault.cause))
-                    g.add_metric(labels=[server, fault.cause, chassi.dn, fault.severity, fault.descr], value=1)
+                    g.add_metric(labels=[server, chassi.dn, fault.cause, fault.severity, fault.descr], value=1)
             else:
                 logger.info("{0}: {1} No Faults detected.".format(server, chassi.dn))
                 g.add_metric(labels=[server, chassi.dn], value=0)
