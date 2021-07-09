@@ -19,7 +19,7 @@ from modules.ConnectionManager import ConnectionManager
 
 COLLECTORS = [
     "UcsmCollector",
-    "UcsmVIFCollector",
+#    "UcsmVIFCollector",
     "UcsmFaultCollector",
     "UcsServerLicenseCollector",
     "UcsmChassisFaultCollector",
@@ -99,8 +99,11 @@ if __name__ == '__main__':
     params = get_params()
     logger.debug(f"Params are { params }")
     manager = register_collectors(params)
-    logger.info(f"Listening to port: { params['port'] }")
-    logger.info(f"Poll interval: { params['interval'] }")
+
+    logger.info("Listening to port: %s" %params['port'])
+    logger.info("Poll interval: %i" %params['interval'])
+    logger.info("Scrape interval: %i" %params['scrape_interval'])
+
     start_http_server(params['port'])
     try:
         manager.run_check_loop()
