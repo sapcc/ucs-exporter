@@ -10,5 +10,5 @@ RUN pip3 install --upgrade pip
 ADD . ucs-exporter/
 RUN pip3 install --upgrade -r ucs-exporter/requirements.txt
 
-WORKDIR ucs-exporter
+WORKDIR /ucs-exporter
 #CMD ["python", "ucs-exporter.py"]
