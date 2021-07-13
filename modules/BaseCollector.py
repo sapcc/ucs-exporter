@@ -26,7 +26,7 @@ class BaseCollector(ABC):
             try:
                 return fnc(*tuple(args), **dict(kwargs))
             except urllib.error.URLError as e:
-                logger.error(f"URLError: { server } { e.reason }")
+                logger.error(f"URLError: { e.reason }")
             except UcsException as e:
                 if e.error_code == 552:
                     logger.info(f"Session timeout UCS: { e }. Retry # { retry }")
