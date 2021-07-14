@@ -1,8 +1,10 @@
-FROM keppel.eu-de-1.cloud.sap/ccloud-dockerhub-mirror/library/alpine:latest
+FROM docker.io/ubuntu:20.04
 
 LABEL source_repository="https://github.com/sapcc/ucs-exporter.git"
-RUN apk --update add python3 openssl ca-certificates bash python3-dev  git py3-pip && \
-    apk --update add --virtual build-dependencies libffi-dev openssl-dev libxml2 libxml2-dev libxslt libxslt-dev build-base
+RUN export DEBIAN_FRONTEND=noninteractive \
+    && apt-get update \
+    && apt-get install -y python3 git \
+    && apt-get install -y python3-pip
 RUN git config --global http.sslVerify false
 RUN git clone https://github.com/sapcc/ucs-exporter.git
 RUN pip3 install --upgrade pip
