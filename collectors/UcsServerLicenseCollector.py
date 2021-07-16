@@ -18,7 +18,7 @@ class UcsServerLicenseCollector(BaseCollector):
         }
 
     def get_metrics(self):
-        return {"license" : GaugeMetricFamily("ucs_server_license", "licenses",
+        return {"license" : GaugeMetricFamily("ucsm_server_license", "licenses",
                                               labels=['server', 'port_name'])}
 
     def collect_metrics(self, server, handle):
