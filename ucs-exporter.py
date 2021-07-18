@@ -21,7 +21,7 @@ COLLECTORS = [
     "UcsmCollector",
 #    "UcsmVIFCollector",
     "UcsmFaultCollector",
-    "UcsServerLicenseCollector",
+    "UcsmPortLicenseCollector",
     "UcsmChassisFaultCollector",
     "UcsPortCollector",
     "UcsPortStatsCollector.UcsPortErrStatsCollector",

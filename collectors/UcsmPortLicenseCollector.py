@@ -7,7 +7,7 @@ from modules.BaseCollector import BaseCollector
 logger = logging.getLogger("UcsmLicenseCollector")
 
 
-class UcsServerLicenseCollector(BaseCollector):
+class UcsmPortLicenseCollector(BaseCollector):
     def __init__(self, manager):
         super().__init__(manager)
         self.license_state = {
@@ -18,7 +18,7 @@ class UcsServerLicenseCollector(BaseCollector):
         }
 
     def get_metrics(self):
-        return {"license" : GaugeMetricFamily("ucsm_server_license", "licenses",
+        return {"license" : GaugeMetricFamily("ucsm_port_license", "licenses",
                                               labels=['server', 'port_name', 'type', 'transport', 'license_state'])}
 
     def collect_metrics(self, server, handle):
