@@ -2,10 +2,9 @@ import logging
 from ucsmsdk.ucsconstants import NamingId
 from prometheus_client.core import GaugeMetricFamily
 from modules.BaseCollector import BaseCollector
-
+import math
 
 logger = logging.getLogger("UcsmTemperatureSensorCollector")
-
 
 class UcsmTemperatureSensorCollector(BaseCollector):
     def get_metrics(self):
@@ -22,10 +21,12 @@ class UcsmTemperatureSensorCollector(BaseCollector):
 
         mb_temp = handle.query_classid(NamingId.COMPUTE_MB_TEMP_STATS)
         for temp in mb_temp:
+            value_rear = math.nan if temp.fm_temp_sen_rear == 'not-applicable' else temp.fm_temp_sen_rear
             g.add_metric(labels=[server, temp.dn, "motherboard_rear_temperature"],
-                                    value=temp.fm_temp_sen_rear)
+                                    value=value_rear)
+            value_io = math.nan if temp.fm_temp_sen_io == 'not-applicable' else temp.fm_temp_sen_io
             g.add_metric(labels=[server, temp.dn, "motherboard_front_temperature"],
-                                    value=temp.fm_temp_sen_io)
+                                    value=value_io)
 
         cpu_temp = handle.query_classid(NamingId.PROCESSOR_ENV_STATS)
         for temp in cpu_temp:
