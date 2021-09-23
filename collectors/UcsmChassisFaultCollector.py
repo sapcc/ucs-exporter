@@ -10,7 +10,7 @@ logger = logging.getLogger("UcsmChassisCollector")
 class UcsmChassisFaultCollector(BaseCollector):
     def get_metrics(self):
         return {
-            "faults": GaugeMetricFamily("ucsm_chassis_faults", "UCSM server chassis faults", labels=['server', 'chassi', 'fault', 'severity', 'description'])
+            "faults": GaugeMetricFamily("ucsm_chassis_faults", "UCSM server chassis faults", labels=['server', 'chassi', 'fault', 'severity', 'description', 'code', 'cause'])
         }
 
     def collect_metrics(self, server, handle):
@@ -26,7 +26,7 @@ class UcsmChassisFaultCollector(BaseCollector):
             if faults:
                 for fault in faults:
                     logger.info("{0}: {1} Chassis fault detected: {2}".format(server, chassi.dn, fault.severity))
-                    g.add_metric(labels=[server, chassi.dn, fault.cause, fault.severity, fault.descr], value=1)
+                    g.add_metric(labels=[server, chassi.dn, fault.cause, fault.severity, fault.descr, fault.code, fault.cause], value=1)
             else:
                 logger.info("{0}: {1} No Chassis faults detected.".format(server, chassi.dn))
                 g.add_metric(labels=[server, chassi.dn], value=0)
