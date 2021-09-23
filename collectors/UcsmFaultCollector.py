@@ -11,7 +11,7 @@ logger = logging.getLogger("UcsmFaultCollector")
 class UcsmFaultCollector(BaseCollector):
     def get_metrics(self):
         return {
-            "fault": GaugeMetricFamily("ucsm_faults", "UCSM fault Status", labels=['server', 'type', 'description', 'dn', 'severity'])
+            "fault": GaugeMetricFamily("ucsm_faults", "UCSM fault Status", labels=['server', 'type', 'description', 'dn', 'severity', 'code', 'cause'])
         }
 
     def collect_metrics(self, server, handle):
@@ -22,8 +22,8 @@ class UcsmFaultCollector(BaseCollector):
 
         if faults:
             for fault in faults:
-                logger.info("{0}: UCSM fault detected with severity {1}".format(server, fault.severity))
-                g.add_metric(labels=[server, fault.type, fault.descr, fault.dn, fault.severity], value=1)
+                logger.debug("{0}: UCSM fault detected with severity {1}".format(server, fault.severity))
+                g.add_metric(labels=[server, fault.type, fault.descr, fault.dn, fault.severity, fault.code, fault.cause], value=1)
         else:
             logger.info("{0}: No UCSM faults detected.".format(server))
             g.add_metric(labels=[server], value=0)
