@@ -58,8 +58,9 @@ class BaseCollector(ABC):
         handle = self.manager.get_handle(host)
         if not handle:
             logger.info(f"Empty handle for server { host }")
-        for metric in self.collect_metrics(host, handle):
-            new_data.append(metric)
+        else:     
+            for metric in self.collect_metrics(host, handle):
+                new_data.append(metric)
 
         self._last_results[host] = new_data
 
