@@ -26,11 +26,11 @@ ADMIN_STATE = {
 class UcsPortCollector(BaseCollector):
     def get_metrics(self):
         oper_state = GaugeMetricFamily('ucs_port_op_state', 'State if port is up/down',
-                              labels=['server', 'port_name'])
+                              labels=['server', 'port'])
         oper_speed = GaugeMetricFamily('ucs_port_speed', 'Speed of interface',
-                              labels=['server', 'port_name'])
+                              labels=['server', 'port'])
         admin_state = GaugeMetricFamily('ucs_port_admin_state', 'State of port',
-                              labels=['server', 'port_name'])
+                              labels=['server', 'port'])
         return {"oper_state": oper_state,
                 "oper_speed": oper_speed,
                 "admin_state": admin_state}
