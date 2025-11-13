@@ -40,7 +40,7 @@ class Netbox:
         bbs = {}
         for av_zone in av_zones:
             try:
-                ucs_servers = self.nb.dcim.devices.filter(q=self.nb_config["query"], tenant=self.nb_config["tenant"],
+                ucs_servers = self.nb.dcim.devices.filter(q=self.nb_config["query"], tenant_id=self.nb_config["tenant_id"],
                                                           status=self.nb_config["status"], site=av_zone)
                 bbs.setdefault(av_zone, []).extend([ucs.name.split("-")[1].lower() for ucs in ucs_servers])
             except pynetbox.RequestError as e:
@@ -56,7 +56,7 @@ class Netbox:
         bbs = {}
         for region in regions:
             try:
-                ucs_servers = self.nb.dcim.devices.filter(q=self.nb_config["query"], tenant=self.nb_config["tenant"],
+                ucs_servers = self.nb.dcim.devices.filter(q=self.nb_config["query"], tenant_id=self.nb_config["tenant_id"],
                                                           status=self.nb_config["status"], region=region)
                 bbs.setdefault(region, []).extend([ucs.name.split("-")[1].lower() for ucs in ucs_servers])
             except pynetbox.RequestError as e:
